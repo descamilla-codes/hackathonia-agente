@@ -1,0 +1,28 @@
+{
+  "antes": [
+    "Chat de WhatsApp con +1 555 0100 0006.txt",
+    "Chat de WhatsApp con +52 22 3333 0007.txt",
+    "Chat de WhatsApp con +52 33 5555 0002.txt",
+    "Chat de WhatsApp con +52 55 1234 0001.txt",
+    "Chat de WhatsApp con +52 55 8765 0003.txt",
+    "Chat de WhatsApp con +52 55 9999 0005.txt",
+    "Chat de WhatsApp con +52 81 4444 0004.txt",
+    "Chat de WhatsApp con Ale.txt",
+    "Chat de WhatsApp con Daniela.txt",
+    "Chat de WhatsApp con Fer.txt",
+    "Chat de WhatsApp con Jorge R.txt",
+    "Chat de WhatsApp con Mariana López.txt",
+    "Chat de WhatsApp con Paty Ruiz.txt"
+  ],
+  "despues": [
+    "Chat de WhatsApp con +52 22 5555 0105.txt",
+    "Chat de WhatsApp con +52 33 7777 0102.txt",
+    "Chat de WhatsApp con +52 55 2222 0101.txt",
+    "Chat de WhatsApp con +52 55 4444 0104.txt",
+    "Chat de WhatsApp con +52 81 3333 0103.txt",
+    "Chat de WhatsApp con Karla.txt",
+    "Chat de WhatsApp con Luis M.txt",
+    "Chat de WhatsApp con Rodrigo.txt",
+    "Chat de WhatsApp con Sofía.txt"
+  ]
+}

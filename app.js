@@ -135,6 +135,7 @@ function start() {
   if (!state.analysis.problems.length) return show("empty");
   draft = state.picks.map((p) => (p === SKIP ? null : p));
   show("book");
+  if (!msgs.childElementCount) say(`Encontré ${state.analysis.problems.length} problemas en tus chats. Pregúntame lo que quieras de cada uno.`, "bot");
   current = -1;
   go(next());
 }
@@ -347,11 +348,98 @@ $("sheet").addEventListener("click", (e) => {
   go(next());
 });
 
+// ---------- Chat with the agent (spec 004) ----------
+
+const msgs = $("msgs");
+function say(text, who) {
+  const div = document.createElement("div");
+  div.className = `msg ${who}`;
+  div.textContent = text; // plain text (RF-6)
+  msgs.append(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function chatContext() {
+  if (current === SUMMARY()) {
+    return { resumen: accepted().map((x) => ({ problema: x.problem.title, decision: x.solution.title })) };
+  }
+  const p = state.analysis.problems[current];
+  return {
+    titulo: p.title, descripcion: p.description, productos: p.products,
+    conversaciones: `${p.count} de ${state.analysis.total} (${p.pct}%)`,
+    frases_de_clientes: p.quotes.map((q) => q.text),
+    soluciones: p.solutions.map((o) => ({ titulo: o.title, que: o.what, por_que: o.why, recomendada: o.recommended })),
+  };
+}
+
+// Answer from the problem's own data when the AI is unavailable (RF-5): nothing invented.
+function localAnswer(question) {
+  if (current === SUMMARY()) return "Revisa tu resumen: cada decisión viene de lo que más repitieron tus clientes.";
+  const p = state.analysis.problems[current];
+  const rec = p.solutions.find((o) => o.recommended);
+  if (/otra|opci/i.test(question)) return `Las otras opciones son: ${p.solutions.filter((o) => !o.recommended).map((o) => o.title).join(" y ")}.`;
+  if (/client|dijeron|dicen/i.test(question)) return `Por ejemplo: ${p.quotes.map((q) => `"${q.text}"`).join(" y ")}.`;
+  return `Recomiendo "${rec.title}": ${rec.why}`;
+}
+
+async function ask(question) {
+  question = question.trim().slice(0, 300);
+  if (!question || !state) return;
+  say(question, "me");
+  let answer;
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 20_000);
+    if (state.fallback) throw new Error("example analysis");
+    const res = await fetch("api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, problem: chatContext() }),
+      signal: ctrl.signal,
+    });
+    if (!res.ok) throw new Error(res.status);
+    answer = (await res.json()).answer;
+    clearTimeout(timer);
+  } catch {
+    answer = localAnswer(question);
+  }
+  say(answer, "bot");
+}
+
+$("ask").addEventListener("submit", (e) => {
+  e.preventDefault();
+  ask($("q").value);
+  $("q").value = "";
+});
+$("chips").addEventListener("click", (e) => {
+  if (e.target.closest(".chip")) ask(e.target.textContent);
+});
+
+// ---------- Example chats (spec 005) ----------
+
+async function loadExamples(which) {
+  try {
+    const index = await (await fetch("muestras/index.json")).json();
+    const dir = which === "antes" ? "muestras/chats/" : "muestras/chats_despues/";
+    const list = await Promise.all(index[which].map(async (name) => {
+      const res = await fetch(dir + encodeURIComponent(name));
+      if (!res.ok) throw new Error(res.status);
+      return new File([await res.text()], name);
+    }));
+    await readFiles(list);
+  } catch {
+    $("status").innerHTML = `<p class="error">No pudimos cargar los chats de ejemplo. Puedes subir los tuyos.</p>`;
+  }
+}
+$("demo-antes").addEventListener("click", () => loadExamples("antes"));
+$("demo-despues").addEventListener("click", () => loadExamples("despues"));
+
 // ---------- Restart and reload (RF-37, RF-38) ----------
 
 $("restart").addEventListener("click", () => {
   try { localStorage.removeItem(KEY); } catch {}
   clearInterval(polling);
+  msgs.textContent = "";
   state = null;
   files = [];
   uploads = 0;

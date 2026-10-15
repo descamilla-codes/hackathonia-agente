@@ -75,3 +75,12 @@ test("queue rejects invalid plans and results (RF-14)", async () => {
 test("queue unavailable answers 503 so the page offers copy (RF-18)", async () => {
   assert.equal((await call(makeHandler(null), { method: "POST", query: {}, body: { ops: [desc] } }))[0], 503);
 });
+
+test("chat: question required, max 300 chars, bounded context (spec 004, RF-7)", async () => {
+  const { validChat } = await import("../api/chat.js");
+  const problem = { titulo: "Tallas" };
+  assert.ok(validChat({ question: "¿Por qué recomiendas esa?", problem }));
+  assert.ok(!validChat({ question: "   ", problem }));
+  assert.ok(!validChat({ question: "x".repeat(301), problem }));
+  assert.ok(!validChat({ question: "hola", problem: { big: "x".repeat(7000) } }));
+});
