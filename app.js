@@ -25,8 +25,8 @@ function load() {
   try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; }
 }
 function show(id) {
-  for (const s of ["upload", "progress", "empty", "book"]) $(s).hidden = s !== id;
-  $("restart").hidden = id === "upload" || id === "progress";
+  for (const s of ["cover", "upload", "progress", "empty", "book"]) $(s).hidden = s !== id;
+  $("restart").hidden = id === "cover" || id === "upload" || id === "progress";
   $("banner").hidden = !(id === "book" && state?.fallback);
 }
 
@@ -463,5 +463,6 @@ $("restart").addEventListener("click", () => {
 state = load();
 if (state?.plan?.status === "loading") state.plan = null;
 if (state?.analysis) start();
+else show("cover");
 if (state?.plan?.status === "pending") poll();
-else show("upload");
+$("start").addEventListener("click", () => show("upload"));
