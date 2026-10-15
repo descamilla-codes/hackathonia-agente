@@ -89,6 +89,7 @@ nav .btn { padding: 10px 18px; }
 .stat-card.next .big { color: var(--accent); }
 .note { font-size: 14px; margin: 12px 0 0; }
 .pending { margin: 16px 0 0; font-size: 16px; }
+.pill.example { margin-top: 16px; background: var(--soft); color: var(--muted); border: 1px solid var(--line); }
 .card { border: 1px solid var(--line); border-radius: 14px; padding: 24px; background: var(--bg); }
 .card h3 { margin: 0 0 8px; font-size: 20px; }
 .card p { margin: 0; color: var(--muted); font-size: 16px; }
@@ -184,14 +185,15 @@ footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 14px; co
   <!-- 5. Results and trust -->
   <section id="resultados">
     <div class="wrap">
-      <h2>Mide si funcionó</h2>
+      <h2>Así mides si funcionó</h2>
       <p class="lead">Una semana después vuelves a subir tus chats y ves si las dudas bajaron.</p>
+      <span class="pill example">Ejemplo con chats de prueba</span>
       <div class="results">
         <div class="left">
           <div class="stats">
-            <div class="card stat-card"><span class="topic">Tallas</span><b class="big">36% <span>&rarr;</span> 0%</b><p>4 de 11 clientes preguntaban qué talla pedir.</p><p>Después de poner la tabla de medidas en cada prenda, nadie volvió a preguntar.</p></div>
-            <div class="card stat-card"><span class="topic">Envío</span><b class="big">27% <span>&rarr;</span> 0%</b><p>3 de 11 clientes preguntaban cuánto costaba el envío y cuándo llegaba.</p><p>Con el costo y los días en la ficha, la duda desapareció.</p></div>
-            <div class="card stat-card next"><span class="topic">Disponibilidad</span><b class="big">44%</b><p>4 de 9 clientes preguntaron por una talla, color o pieza agotada.</p><p>Es un tema nuevo: el agente lo detectó solo y ya te propone qué hacer.</p></div>
+            <div class="card stat-card"><span class="topic">Tallas</span><b class="big">36% <span>&rarr;</span> 0%</b><p>En la primera semana, 4 de 11 clientes preguntaron qué talla pedir.</p><p>En los chats de la segunda semana nadie pregunta por tallas. Así se vería si la tabla de medidas funciona.</p></div>
+            <div class="card stat-card"><span class="topic">Envío</span><b class="big">27% <span>&rarr;</span> 0%</b><p>En la primera semana, 3 de 11 clientes preguntaron por el costo y los días de envío.</p><p>En la segunda semana nadie pregunta. Así se vería si poner el envío en la ficha funciona.</p></div>
+            <div class="card stat-card next"><span class="topic">Disponibilidad</span><b class="big">44%</b><p>En la segunda semana, 4 de 9 clientes preguntaron por una talla, color o pieza agotada.</p><p>Es un tema nuevo: el agente lo detecta solo y te propone qué hacer.</p></div>
           </div>
         </div>
         <div class="side">
@@ -201,8 +203,8 @@ footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 14px; co
           <div class="card"><h3>Tú das el visto bueno</h3><p>Antes de tocar tu tienda te enseñamos el cambio exacto. Tú lo apruebas o lo descartas.</p></div>
         </div>
       </div>
-      <p class="pending"><b>Confianza subió de 27% a 33%.</b> Sigue pendiente, y el agente ya te propone el siguiente paso.</p>
-      <p class="muted note">Porcentaje de chats que preguntan por cada tema. Resultado real del agente con los chats de prueba de la demo: 11 chats antes y 9 una semana después.</p>
+      <p class="pending"><b>Confianza subió de 27% a 33%.</b> Sigue pendiente, y el agente te propone el siguiente paso.</p>
+      <p class="muted note">Porcentaje de chats que preguntan por cada tema. El análisis lo hizo el agente con IA real, pero los chats son de prueba, escritos por el equipo: 11 de la primera semana y 9 de la segunda. El siguiente paso es un piloto con una tienda real.</p>
     </div>
   </section>
 
