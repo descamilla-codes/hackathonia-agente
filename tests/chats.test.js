@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { prepare, verify, compute, isSpam } from "../lib/chats.js";
+import { prepare, verify, compute, isSpam, snapshot } from "../lib/chats.js";
 
 const dir = new URL("../muestras/chats/", import.meta.url);
 const samples = readdirSync(dir).map((name) => ({ name, text: readFileSync(new URL(name, dir), "utf8") }));
@@ -126,7 +126,7 @@ test("'after' samples are valid chats from the same store (spec 003)", () => {
   const after = readdirSync(d).map((name) => ({ name, text: readFileSync(new URL(name, d), "utf8") }));
   const r = prepare(after);
   assert.equal(r.store, "Utel Equipo3");
-  assert.equal(r.total, 9);
+  assert.equal(r.total, 10);
 });
 
 test("exports from the customer side: 'Tú' is not a name, owner picks the store (RF-6d)", async () => {
@@ -148,4 +148,12 @@ test("emails are removed and long messages are cut (review)", () => {
   const t = r.chats[0].messages[0].text;
   assert.ok(!t.includes("@mail.com"));
   assert.ok(t.length <= 2000);
+});
+
+test("before/after counts a topic even in 1 chat, never an invented chat id", () => {
+  const { chats } = prepare(samples);
+  const withTopics = { ...structuredClone(fallback), topics: [{ topic: "pagos", chats: ["c2", "c99"] }, { topic: "tallas", chats: [fallback.problems.find((p) => p.topic === "tallas").chats[0]] }] };
+  const snap = snapshot(verify(withTopics, chats));
+  assert.equal(snap.pagos, Math.round((1 / chats.length) * 100)); // c99 does not exist
+  assert.equal(snap.tallas, 36); // same chat counted once
 });

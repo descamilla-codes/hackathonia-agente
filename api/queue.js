@@ -1,23 +1,10 @@
 // Queue of approved change plans (spec 002). Upstash Redis over REST, no dependency.
 import { validPlan } from "../lib/plan.js";
+import { redis } from "../lib/redis.js";
 import { accessToken, connect, applyPlan } from "../lib/tienda.js";
 
-// Vercel may add a custom prefix (e.g. STORAGE_KV_REST_API_URL), so match by suffix.
-const env = (re) => Object.entries(process.env).find(([k, v]) => re.test(k) && v)?.[1];
-const URL_ = env(/(KV_REST_API|REDIS_REST)_URL$/);
-const TOKEN = env(/(KV_REST_API|REDIS_REST)_TOKEN$/);
 const KEEP = 50; // ponytail: last 50 plans only, demo scale
 const MAX_APPLIES_PER_HOUR = 10; // the page is public: cap what anyone can change in the store
-
-async function upstash(...cmd) {
-  const r = await fetch(URL_, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify(cmd),
-  });
-  if (!r.ok) throw new Error(`redis ${r.status}`);
-  return (await r.json()).result;
-}
 
 const validResults = (results, n) =>
   Array.isArray(results) && results.length === n &&
@@ -88,4 +75,4 @@ export function makeHandler(redis, apply = liveApply) {
   };
 }
 
-export default makeHandler(URL_ && TOKEN ? upstash : null);
+export default makeHandler(redis);

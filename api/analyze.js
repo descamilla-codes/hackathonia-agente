@@ -12,6 +12,7 @@ Reglas:
 - "title": máximo 60 caracteres. "description": máximo 200 caracteres, sin números ni porcentajes.
 - "solutions": exactamente 3, con "what" y "why" de máximo 90 caracteres cada uno. Marca "recommended": true en una sola, la de mayor impacto y menor esfuerzo.
 - "applies": "tienda" solo si se puede hacer editando un producto (descripción, nombre, etiquetas, SEO, precio de oferta, envío gratis del producto) o creando un cupón. Todo lo demás es "tu".
+- "topics": para cada tema donde al menos un cliente preguntó, aunque sea en un solo chat, los id de esos chats. Incluye también los temas de "problems". Sirve para medir si una duda bajó, no para proponer soluciones.
 - "spam": mensajes que sean spam, cadenas o fraudes; ignóralos en el análisis.`;
 
 const quote = {
@@ -56,9 +57,18 @@ const SCHEMA = {
         additionalProperties: false,
       },
     },
+    topics: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { topic: { type: "string", enum: Object.keys(TOPICS) }, chats: { type: "array", items: { type: "string" } } },
+        required: ["topic", "chats"],
+        additionalProperties: false,
+      },
+    },
     spam: { type: "array", items: quote },
   },
-  required: ["problems", "spam"],
+  required: ["problems", "topics", "spam"],
   additionalProperties: false,
 };
 

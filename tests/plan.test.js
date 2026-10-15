@@ -105,3 +105,22 @@ test("security: plan and analyze inputs are bounded (review)", async () => {
   assert.ok(validChats([chat("hola"), chat("hola"), chat("hola")]));
   assert.ok(!validChats([chat("x".repeat(2001)), chat("hola"), chat("hola")]));
 });
+
+test("history keeps only date, chat count and topic percentages (spec 003)", async () => {
+  const { validEntry, makeHandler: history } = await import("../api/history.js");
+  assert.ok(validEntry({ date: "15 oct", total: 11, topics: { tallas: 36 } }));
+  assert.ok(!validEntry({ date: "15 oct", total: 11, topics: { "y tallan grande?": 36 } }));
+  assert.ok(!validEntry({ date: "15 oct", total: 2, topics: {} }));
+  const kv = new Map();
+  const redis = async (cmd, k, v) => {
+    if (cmd === "LPUSH") kv.set(k, [v, ...(kv.get(k) || [])]);
+    if (cmd === "LRANGE") return kv.get(k) || [];
+    return 1;
+  };
+  const h = history(redis);
+  const store = "a".repeat(64);
+  const body = { date: "15 oct", total: 11, topics: { tallas: 36 }, quotes: ["no se guarda"] };
+  assert.equal((await call(h, { method: "POST", query: { store }, body }))[0], 201);
+  assert.deepEqual((await call(h, { method: "GET", query: { store } }))[1], [{ date: "15 oct", total: 11, topics: { tallas: 36 } }]);
+  assert.equal((await call(h, { method: "GET", query: { store: "Utel Equipo3" } }))[0], 400);
+});

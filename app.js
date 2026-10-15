@@ -92,8 +92,36 @@ async function useFallback() {
   return { analysis: compute(fb, fb.total), fallback: true, fallbackPlans: fb.plans };
 }
 
+// History is keyed by a one-way hash of the store name, so the server never sees the name.
+async function storeKey(name) {
+  if (!name || name === NO_STORE) return null;
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(name.trim().toLowerCase()));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Previous analysis of this store: server first (any device), this browser as fallback.
+async function previous(key) {
+  if (key) {
+    try {
+      const r = await fetch(`api/history?store=${key}`, { signal: AbortSignal.timeout(5000) });
+      if (r.ok) return (await r.json())[0] || null;
+    } catch {}
+  }
+  try { return JSON.parse(localStorage.getItem(HISTORY)); } catch { return null; }
+}
+
+async function remember(key, entry) {
+  try { localStorage.setItem(HISTORY, JSON.stringify(entry)); } catch {}
+  if (!key) return;
+  try {
+    await fetch(`api/history?store=${key}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(entry), signal: AbortSignal.timeout(5000) });
+  } catch {}
+}
+
 async function analyze() {
   if (!ready || ready.error) return;
+  const total = ready.chats.length;
+  const key = await storeKey(ready.store).catch(() => null);
   $("analyze").disabled = true; // no second analysis while running
   show("progress");
   let result;
@@ -120,11 +148,10 @@ async function analyze() {
   state = { ...result, picks: new Array(result.analysis.problems.length).fill(null) };
   if (!result.fallback) {
     // Compare with the previous real analysis, then remember this one (spec 003).
-    let prev = null;
-    try { prev = JSON.parse(localStorage.getItem(HISTORY)); } catch {}
+    const prev = await previous(key);
     if (prev) state.compare = prev;
     const date = new Date().toLocaleDateString("es-MX", { day: "numeric", month: "short" });
-    try { localStorage.setItem(HISTORY, JSON.stringify({ date, topics: snapshot(result.analysis) })); } catch {}
+    await remember(key, { date, total, topics: snapshot(result.analysis) });
   }
   save();
   start();
