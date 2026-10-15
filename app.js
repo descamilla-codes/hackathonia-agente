@@ -1,5 +1,6 @@
 import { prepare, verify, compute, MAX_FILES } from "./lib/chats.js";
 import { readZipTexts } from "./lib/zip.js";
+import { describe } from "./lib/plan.js";
 
 const $ = (id) => document.getElementById(id);
 const KEY = "agente-state";
@@ -12,7 +13,7 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&
 let files = [];   // [{ name, text }] extracted, kept only in memory (RF-11)
 let uploads = 0;
 let ready = null; // result of prepare()
-let state = null; // { analysis, picks, fallback } persisted (RF-37)
+let state = null; // { analysis, picks, fallback, fallbackPlans?, plan? } persisted (RF-37)
 let draft = [];
 let current = 0;
 
@@ -85,7 +86,7 @@ $("status").addEventListener("change", (e) => { if (e.target.name === "store") r
 
 async function useFallback() {
   const fb = await (await fetch("fallback.json")).json();
-  return { analysis: compute(fb, fb.total), fallback: true };
+  return { analysis: compute(fb, fb.total), fallback: true, fallbackPlans: fb.plans };
 }
 
 async function analyze() {
@@ -179,6 +180,12 @@ function renderProblem(i) {
     </div>`;
 }
 
+function accepted() {
+  return state.analysis.problems
+    .map((p, i) => ({ problem: p, solution: state.picks[i] !== null && state.picks[i] !== SKIP ? p.solutions[state.picks[i]] : null }))
+    .filter((x) => x.solution);
+}
+
 function renderSummary() {
   const items = state.analysis.problems.map((p, i) => {
     const pick = state.picks[i];
@@ -187,13 +194,112 @@ function renderSummary() {
     const o = p.solutions[pick];
     return `<li><b>${esc(o.title)}</b> · ${esc(p.title)}<small>${esc(o.what)} · ${o.applies === "tienda" ? "Se aplica en tu tienda" : "Lo haces tú"}</small></li>`;
   });
+  const mine = accepted().filter((x) => x.solution.applies === "tu");
+  const store = accepted().filter((x) => x.solution.applies === "tienda");
   $("sheet").innerHTML = `
     <div class="summary">
       <div class="meta">Resumen</div>
       <h1>Lo que decidiste</h1>
       <p class="desc">Puedes volver a cualquier hoja para cambiar tu decisión.</p>
       <ol>${items.join("")}</ol>
+      ${mine.length ? `<p><b>Para hacer tú:</b></p><ul>${mine.map((x) => `<li>${esc(x.solution.what)}</li>`).join("")}</ul>` : ""}
+      <div id="apply">${renderApply(store.length)}</div>
     </div>`;
+}
+
+// ---------- Apply in the store (spec 002) ----------
+
+function renderApply(storeCount) {
+  const plan = state.plan;
+  const opsList = (ops, results) => `<ol>${ops.map((op, i) => {
+    const r = results?.[i];
+    const mark = r ? (r.ok ? "✓ " : "✗ ") : "";
+    return `<li><b>${mark}${esc(describe(op))}</b>${op.text ? `<small>"${esc(op.text)}"</small>` : ""}${r ? `<small>${esc(r.detail)}</small>` : ""}</li>`;
+  }).join("")}</ol>`;
+
+  if (!plan || plan.status === "error") {
+    return `${plan ? `<p class="error">No pudimos preparar los cambios. Intenta de nuevo.</p>` : ""}
+      <button class="btn primary apply-btn" ${storeCount ? "" : "disabled"}>Aplicar en mi tienda</button>
+      ${storeCount ? "" : `<p class="muted">Acepta al menos una solución que se aplique en tu tienda.</p>`}`;
+  }
+  if (plan.status === "loading") return `<div class="row"><div class="spinner" aria-hidden="true"></div><b>Preparando los cambios…</b></div>`;
+  if (plan.status === "preview") {
+    return `<div class="notice"><b>Esto es lo que va a cambiar en tu tienda:</b>${opsList(plan.ops)}</div>
+      <div class="row"><button class="btn primary confirm">Confirmar y aplicar</button><button class="btn ghost cancel">Cancelar</button></div>`;
+  }
+  if (plan.status === "pending") {
+    const late = Date.now() - plan.since > 120_000;
+    return `<div class="row"><div class="spinner" aria-hidden="true"></div><b>Esperando al agente…</b></div>
+      ${late ? `<p class="muted">Tu plan quedó guardado. El agente lo aplicará en cuanto se conecte.</p>` : ""}${opsList(plan.ops)}`;
+  }
+  if (plan.status === "applied") return `<p class="notice"><b>Aplicado ✓</b></p>${opsList(plan.ops, plan.results)}`;
+  // manual: no queue available (RF-18)
+  return `<p class="notice">El plan está listo. Cópialo y pídele al agente que lo aplique.</p>
+    <textarea readonly rows="8" style="width:100%">${esc(JSON.stringify(plan.ops, null, 2))}</textarea>
+    <div class="row"><button class="btn ghost copy">Copiar plan</button></div>`;
+}
+
+function rerenderApply() {
+  if (current === SUMMARY() && $("apply")) $("apply").innerHTML = renderApply(accepted().some((x) => x.solution.applies === "tienda"));
+}
+
+async function preparePlan() {
+  const items = accepted().filter((x) => x.solution.applies === "tienda");
+  state.plan = { status: "loading" };
+  rerenderApply();
+  try {
+    let ops;
+    if (state.fallback) {
+      ops = items.flatMap((x) => state.fallbackPlans?.[`${x.problem.topic}|${x.solution.title}`] || []);
+      if (!ops.length) throw new Error("no example plan");
+    } else {
+      const res = await fetch("api/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: items.map((x) => ({
+          problem: { topic: x.problem.topic, title: x.problem.title, description: x.problem.description, products: x.problem.products },
+          solution: { title: x.solution.title, what: x.solution.what, why: x.solution.why },
+        })) }),
+      });
+      if (!res.ok) throw new Error(res.status);
+      ops = (await res.json()).ops;
+    }
+    state.plan = { status: "preview", ops };
+  } catch {
+    state.plan = { status: "error" };
+  }
+  save();
+  rerenderApply();
+}
+
+async function confirmPlan() {
+  const ops = state.plan.ops;
+  try {
+    const res = await fetch("api/queue", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ops }) });
+    if (!res.ok) throw new Error(res.status);
+    state.plan = { status: "pending", ops, id: (await res.json()).id, since: Date.now() };
+    poll();
+  } catch {
+    state.plan = { status: "manual", ops };
+  }
+  save();
+  rerenderApply();
+}
+
+let polling = null;
+function poll() {
+  clearInterval(polling);
+  polling = setInterval(async () => {
+    if (state?.plan?.status !== "pending") return clearInterval(polling);
+    try {
+      const plan = await (await fetch(`api/queue?id=${encodeURIComponent(state.plan.id)}`)).json();
+      if (plan.status === "applied") {
+        state.plan = { ...state.plan, status: "applied", results: plan.results };
+        save();
+      }
+    } catch {}
+    rerenderApply();
+  }, 3000);
 }
 
 $("tabs").addEventListener("click", (e) => {
@@ -210,7 +316,12 @@ $("sheet").addEventListener("click", (e) => {
   }
   if (e.target.closest(".accept")) state.picks[current] = draft[current];
   else if (e.target.closest(".skip")) { state.picks[current] = SKIP; draft[current] = null; }
+  else if (e.target.closest(".apply-btn")) return preparePlan();
+  else if (e.target.closest(".confirm")) return confirmPlan();
+  else if (e.target.closest(".cancel")) { state.plan = null; save(); return rerenderApply(); }
+  else if (e.target.closest(".copy")) return navigator.clipboard?.writeText(JSON.stringify(state.plan.ops, null, 2));
   else return;
+  if (state.plan?.status === "preview" || state.plan?.status === "error") state.plan = null;
   save();
   go(next());
 });
@@ -219,6 +330,7 @@ $("sheet").addEventListener("click", (e) => {
 
 $("restart").addEventListener("click", () => {
   try { localStorage.removeItem(KEY); } catch {}
+  clearInterval(polling);
   state = null;
   files = [];
   uploads = 0;
@@ -229,5 +341,7 @@ $("restart").addEventListener("click", () => {
 });
 
 state = load();
+if (state?.plan?.status === "loading") state.plan = null;
 if (state?.analysis) start();
+if (state?.plan?.status === "pending") poll();
 else show("upload");

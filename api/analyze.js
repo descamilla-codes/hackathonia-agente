@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { askJson } from "../lib/claude.js";
 
 const SYSTEM = `Eres un agente que analiza conversaciones de WhatsApp entre una tienda en línea mexicana y sus clientes. Tu trabajo: encontrar qué dudas se repiten antes de comprar y proponer cambios concretos para la tienda.
 
@@ -85,19 +85,8 @@ export default async function handler(req, res) {
   if (!validChats(chats)) return res.status(400).json({ error: "invalid" });
 
   try {
-    const client = new Anthropic({ timeout: 50_000, maxRetries: 0 }); // the page falls back at 45 s
-    const msg = await client.beta.messages.create({
-      model: "claude-opus-5-5",
-      max_tokens: 16000,
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-      system: SYSTEM,
-      messages: [{ role: "user", content: `<chats>${JSON.stringify(chats)}</chats>` }],
-    });
-    if (msg.stop_reason !== "end_turn") throw new Error(`stop_reason ${msg.stop_reason}`);
-    const text = msg.content.find((b) => b.type === "text")?.text;
-    return res.status(200).json(JSON.parse(text));
+    const result = await askJson({ system: SYSTEM, content: `<chats>${JSON.stringify(chats)}</chats>`, schema: SCHEMA });
+    return res.status(200).json(result);
   } catch (err) {
     console.error("analyze failed:", err?.status ?? "", err?.message);
     return res.status(502).json({ error: "ai" });
