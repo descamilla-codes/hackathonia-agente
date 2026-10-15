@@ -10,5 +10,12 @@
     "api/chat.js": {
       "includeFiles": "prompts/**"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/((?!pausa\\.html$).*)",
+      "destination": "/pausa.html",
+      "permanent": false
+    }
+  ]
 }
