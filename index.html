@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agente de voz del cliente</title>
+<style>
+:root {
+  --bg: #ffffff; --sheet: #ffffff; --ink: #16181a; --muted: #5d636a;
+  --line: #dde1dc; --accent: #1f5fd6; --accent-soft: #e8f0fd; --tab: #e9ebe7; --warn: #fff4e0; --warn-ink: #8a4b00;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121413; --sheet: #1b1e1c; --ink: #eceeec; --muted: #a2a8a4;
+    --line: #2e332f; --accent: #5b8ff0; --accent-soft: #1a2640; --tab: #232725; --warn: #3a2a10; --warn-ink: #ffcf8a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121413; --sheet: #1b1e1c; --ink: #eceeec; --muted: #a2a8a4;
+  --line: #2e332f; --accent: #5b8ff0; --accent-soft: #1a2640; --tab: #232725; --warn: #3a2a10; --warn-ink: #ffcf8a;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.45 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
+header, main, .banner { width: 100%; max-width: 1100px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; }
+header b { font-size: 18px; }
+[hidden] { display: none !important; }
+.banner { background: var(--warn); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-size: 14px; }
+
+.btn { font: inherit; font-weight: 700; border-radius: 10px; padding: 12px 18px; cursor: pointer; }
+.primary { background: var(--accent); color: #fff; border: 2px solid var(--accent); }
+.primary:disabled { background: var(--line); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
+.ghost { background: var(--sheet); color: var(--ink); border: 2px solid var(--line); }
+.ghost:hover { border-color: var(--muted); }
+
+.card { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 32px; }
+.drop { display: block; border: 2px dashed var(--line); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; }
+.drop.over, .drop:hover { border-color: var(--accent); background: var(--accent-soft); }
+.drop input { display: none; }
+.muted { color: var(--muted); }
+.notice { margin: 16px 0 0; padding: 10px 14px; border-radius: 10px; background: var(--accent-soft); }
+.error { margin: 16px 0 0; color: #c0392b; }
+.stores label { display: block; margin: 6px 0; }
+.row { display: flex; gap: 12px; align-items: center; margin-top: 20px; flex-wrap: wrap; }
+.spinner { width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-bottom: none;
+  border-radius: 14px 14px 0 0; padding: 32px; min-height: 440px; }
+.sheet h1 { margin: 0 0 4px; font-size: 26px; line-height: 1.2; }
+.meta { color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 10px; }
+.desc { color: var(--muted); max-width: 680px; margin: 0 0 12px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.quotes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.quotes span { background: var(--tab); border-radius: 999px; padding: 3px 12px; font-size: 13px; color: var(--muted); }
+.work { display: flex; gap: 20px; align-items: stretch; }
+.options { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.actions { width: 150px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+.opt { text-align: left; font: inherit; color: inherit; background: var(--sheet);
+  border: 2px solid var(--line); border-radius: 12px; padding: 18px; cursor: pointer;
+  display: flex; flex-direction: column; gap: 10px; transition: border-color .15s, transform .15s; }
+.opt:hover { border-color: var(--accent); transform: translateY(-2px); }
+.opt:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.opt h3 { margin: 0; font-size: 17px; }
+.opt .what, .opt .why { margin: 0; font-size: 14px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.opt .why { color: var(--muted); }
+.opt .why b { color: var(--ink); }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; min-height: 22px; }
+.badge { background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
+.tag { background: var(--tab); color: var(--muted); font-size: 12px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; background: var(--tab);
+  border: 1px solid var(--line); border-radius: 0 0 14px 14px; padding: 0 8px; }
+.tab { font: inherit; font-size: 14px; color: var(--muted); background: transparent; border: none;
+  padding: 10px 16px; cursor: pointer; white-space: nowrap; border-top: 3px solid transparent; }
+.tab[aria-selected="true"] { background: var(--sheet); color: var(--ink); font-weight: 700; border-top-color: var(--accent); }
+.tab .ok { color: var(--accent); margin-left: 6px; }
+.tab .no { margin-left: 6px; }
+.summary ol { padding-left: 20px; margin: 0 0 24px; }
+.summary li { margin-bottom: 14px; }
+.summary li small { display: block; color: var(--muted); }
+.pending { color: #b5651d; }
+
+@media (max-width: 960px) {
+  .work { flex-direction: column; }
+  .actions { width: 100%; flex-direction: row; justify-content: flex-end; }
+  .actions .btn { width: 150px; }
+}
+@media (max-width: 720px) {
+  .sheet, .card { padding: 20px; }
+  .options { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header>
+  <b>Agente de voz del cliente</b>
+  <button class="btn ghost" id="restart" hidden>Nuevo análisis</button>
+</header>
+<div class="banner" id="banner" role="status" hidden>Sin conexión con la IA, mostrando un análisis de ejemplo.</div>
+
+<main>
+  <section class="card" id="upload">
+    <h1 style="margin-top:0">¿Por qué no te compran?</h1>
+    <p class="muted">Sube los chats de WhatsApp de tus clientes. El agente encuentra las dudas que se repiten y te propone qué cambiar en tu tienda.</p>
+    <label class="drop" id="drop">
+      <input type="file" id="files" multiple accept=".txt,.zip">
+      <b>Arrastra aquí tus chats o haz clic para elegirlos</b><br>
+      <span class="muted">Archivos .txt o .zip exportados de WhatsApp · mínimo 3 chats, máximo 50</span>
+    </label>
+    <div id="status" aria-live="polite"></div>
+    <div class="row">
+      <button class="btn primary" id="analyze" disabled>Analizar</button>
+    </div>
+  </section>
+
+  <section class="card" id="progress" hidden>
+    <div class="row" style="margin-top:0"><div class="spinner" aria-hidden="true"></div>
+      <div><b>Analizando tus chats…</b><br><span class="muted">Puede tardar hasta 45 segundos.</span></div></div>
+  </section>
+
+  <section class="card" id="empty" hidden>
+    <h1 style="margin-top:0">No encontramos dudas repetidas</h1>
+    <p class="muted">Ningún tema aparece en 3 o más chats. Prueba con más conversaciones.</p>
+  </section>
+
+  <section id="book" hidden>
+    <div class="sheet" id="sheet" aria-live="polite"></div>
+    <nav class="tabs" id="tabs" role="tablist"></nav>
+  </section>
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

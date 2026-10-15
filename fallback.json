@@ -1,0 +1,63 @@
+{
+  "total": 11,
+  "problems": [
+    {
+      "topic": "tallas",
+      "title": "Tus clientes no saben qué talla pedir",
+      "description": "Preguntan medidas antes de comprar porque las descripciones no dicen cuánto mide cada talla. Algunos se quedan con la duda y no compran.",
+      "products": ["Jeans Mom Vintage", "Camisa Lino Arena", "Vestido Midi Azahar", "Buzo Oversize Nube"],
+      "chats": ["c3", "c6", "c8", "c9"],
+      "quotes": [
+        { "chat": "c3", "text": "y tallan grande o chico? no dice las medidas en la página" },
+        { "chat": "c9", "text": "mido 1.85, no sé si me quede la L" }
+      ],
+      "no_purchase": [
+        { "chat": "c3", "text": "mmm ok lo pienso, gracias" },
+        { "chat": "c6", "text": "ok gracias, lo voy a pensar" }
+      ],
+      "solutions": [
+        { "title": "Tabla de medidas", "what": "Agregar a cada descripción las medidas en cm de cada talla.", "why": "Responde la duda antes de que la escriban.", "recommended": true, "applies": "tienda" },
+        { "title": "Medidas del modelo", "what": "Tomar fotos indicando cuánto mide el modelo y qué talla usa.", "why": "Ayuda a imaginar cómo le quedará la prenda.", "recommended": false, "applies": "tu" },
+        { "title": "Cambio de talla sin costo", "what": "Ofrecer un cambio gratis si la talla no queda.", "why": "Quita el miedo a equivocarse de talla.", "recommended": false, "applies": "tu" }
+      ]
+    },
+    {
+      "topic": "confianza",
+      "title": "No están seguros de comprarle a una tienda nueva",
+      "description": "Preguntan si es seguro pagar, qué pasa si no llega y si hay devoluciones. La tienda no explica garantías ni devoluciones en la página.",
+      "products": [],
+      "chats": ["c1", "c2", "c7", "c11"],
+      "quotes": [
+        { "chat": "c2", "text": "hola es seguro pagar con tarjeta en su página?" },
+        { "chat": "c7", "text": "es que no los conozco y me da miedo que no llegue" }
+      ],
+      "no_purchase": [
+        { "chat": "c1", "text": "ahh ok, mejor lo dejo para después" }
+      ],
+      "solutions": [
+        { "title": "Garantía y devoluciones visibles", "what": "Agregar la política de cambios en 30 días a cada descripción.", "why": "Baja el riesgo de comprar por primera vez.", "recommended": true, "applies": "tienda" },
+        { "title": "Pagos seguros a la vista", "what": "Decir en la descripción que se acepta tarjeta y Oxxo con pago protegido.", "why": "Responde la duda más repetida sobre pagos.", "recommended": false, "applies": "tienda" },
+        { "title": "Fotos de clientes reales", "what": "Publicar en la tienda fotos o reseñas de clientes de Instagram.", "why": "Otros compradores generan más confianza que la tienda.", "recommended": false, "applies": "tu" }
+      ]
+    },
+    {
+      "topic": "envío",
+      "title": "Preguntan cuánto cuesta y cuánto tarda el envío",
+      "description": "El costo de envío aparece hasta el final de la compra, así que preguntan por WhatsApp antes de decidir. Algunos no regresan.",
+      "products": ["Remera Básica Alba", "Pantalón Chino Urbano"],
+      "chats": ["c4", "c5", "c10"],
+      "quotes": [
+        { "chat": "c5", "text": "y el envío cuánto cuesta? en la página no aparece hasta el final" },
+        { "chat": "c10", "text": "cuánto sale el envío a Monterrey de la Remera Básica Alba?" }
+      ],
+      "no_purchase": [
+        { "chat": "c10", "text": "Mejor no, gracias" }
+      ],
+      "solutions": [
+        { "title": "Envío en la descripción", "what": "Poner costo y días de entrega en cada producto.", "why": "El cliente conoce el total desde el principio.", "recommended": true, "applies": "tienda" },
+        { "title": "Cupón de envío gratis", "what": "Crear un cupón de envío gratis para compras desde $799.", "why": "Convierte la duda en un motivo para comprar más.", "recommended": false, "applies": "tienda" },
+        { "title": "Respuesta rápida en WhatsApp", "what": "Guardar un mensaje con costos y tiempos por zona.", "why": "Responde al instante mientras se actualiza la tienda.", "recommended": false, "applies": "tu" }
+      ]
+    }
+  ]
+}

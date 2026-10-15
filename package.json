@@ -1,0 +1,11 @@
+{
+  "name": "hackathonia-agente",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.134.0"
+  }
+}
