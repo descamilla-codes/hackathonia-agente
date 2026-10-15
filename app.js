@@ -449,7 +449,7 @@ $("demo-despues").addEventListener("click", () => loadExamples("despues"));
 
 // ---------- Restart and reload (RF-37, RF-38) ----------
 
-$("restart").addEventListener("click", () => {
+function reset(screen) {
   try { sessionStorage.removeItem(KEY); } catch {}
   clearInterval(polling);
   msgs.textContent = "";
@@ -459,8 +459,10 @@ $("restart").addEventListener("click", () => {
   refresh.pre = [];
   $("files").value = "";
   refresh();
-  show("upload");
-});
+  show(screen);
+}
+$("restart").addEventListener("click", () => reset("upload"));
+$("home").addEventListener("click", () => reset("cover"));
 
 state = load();
 if (state?.plan?.status === "loading") state.plan = null;

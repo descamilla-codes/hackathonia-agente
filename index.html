@@ -118,7 +118,8 @@ textarea { background: var(--bg); color: var(--ink); border: 1px solid var(--lin
 .cover .btn { font-size: 18px; padding: 14px 32px; margin-top: 8px; }
 .cover footer { margin-top: 32px; font-size: 14px; color: var(--muted); }
 @media (max-width: 720px) { .cover .brand { font-size: 52px; } .cover .hook { font-size: 26px; } }
-header .logo { display: flex; align-items: center; gap: 10px; }
+header .logo { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; }
+body:has(#book[hidden]) header { max-width: 1100px; } /* same edge as the screen content */
 .mark { width: 38px; height: 38px; border-radius: 10px; background: var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
 .mark svg { width: 24px; height: 24px; }
 .mark.big { width: 72px; height: 72px; border-radius: 18px; }
@@ -172,7 +173,7 @@ header .team { font-size: 14px; color: var(--muted); }
 </head>
 <body>
 <header>
-  <div class="logo"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M12.5 7.5 10 11h4l-2.5 3.5"/></svg></span><span class="name">Convierte</span></div>
+  <button class="logo" id="home" type="button" aria-label="Volver al inicio"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M12.5 7.5 10 11h4l-2.5 3.5"/></svg></span><span class="name">Convierte</span></button>
   <div class="right"><span class="team">Equipo 3 · HackathonIA</span><button class="btn ghost" id="restart" hidden>Nuevo análisis</button></div>
 </header>
 <div class="banner" id="banner" role="status" hidden>Sin conexión con la IA, mostrando un análisis de ejemplo.</div>
