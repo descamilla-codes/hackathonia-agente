@@ -73,14 +73,25 @@ nav .btn { padding: 10px 18px; }
 .demo-note { margin: 12px 0 0; font-size: 14px; }
 
 /* 5. Results */
-.bento { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin-top: 32px; }
+.results { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; margin-top: 32px; }
+.results .left { display: flex; }
+.results .stats { flex: 1; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.side { display: grid; gap: 16px; }
+.stat-card { display: flex; flex-direction: column; gap: 6px; padding: 20px; }
+.card.stat-card p { font-size: 15px; }
+.card.stat-card p + p { color: var(--ink); }
+.stat-card .big { margin-top: 10px; }
+.stat-card .big span { color: var(--muted); font-weight: 400; }
+.stat-card .topic { font-size: 14px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.stat-card .big { font-size: 32px; line-height: 1.1; letter-spacing: -1px; color: var(--ok-ink); }
+.stat-card.next { border-color: var(--accent); }
+.stat-card.next .big { color: var(--accent); }
+.note { font-size: 14px; margin: 12px 0 0; }
+.pending { margin: 16px 0 0; font-size: 16px; }
 .card { border: 1px solid var(--line); border-radius: 14px; padding: 24px; background: var(--bg); }
 .card h3 { margin: 0 0 8px; font-size: 20px; }
 .card p { margin: 0; color: var(--muted); font-size: 16px; }
-.compare { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 16px; }
-.compare th, .compare td { text-align: left; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.compare td.down { color: var(--ok-ink); font-weight: 700; }
-.side { display: grid; gap: 16px; }
 .card.ok { background: var(--ok-bg); border-color: transparent; }
 .card.ok h3, .card.ok p { color: var(--ok-ink); }
 
@@ -92,7 +103,7 @@ footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 14px; co
 @media (max-width: 900px) {
   .hero h1 { font-size: 38px; }
   h2 { font-size: 28px; }
-  .pain, .steps, .bento { grid-template-columns: 1fr; }
+  .pain, .steps, .results { grid-template-columns: 1fr; }
   nav a:not(.btn) { display: none; }
   .demo iframe { height: 640px; }
   section { padding: 48px 0; }
@@ -175,29 +186,23 @@ footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 14px; co
     <div class="wrap">
       <h2>Mide si funcionó</h2>
       <p class="lead">Una semana después vuelves a subir tus chats y ves si las dudas bajaron.</p>
-      <div class="bento">
-        <div class="card">
-          <h3>Antes y después</h3>
-          <p>Porcentaje de chats que preguntan por cada tema. <b>Ejemplo ilustrativo.</b></p>
-          <!-- MAQUETA: números ilustrativos, reemplazar por el resultado real de "Una semana después" -->
-          <table class="compare">
-            <tr><th>Tema</th><th>Antes</th><th>Después</th></tr>
-            <tr><td>Tallas</td><td>36%</td><td class="down">11%</td></tr>
-            <tr><td>Envío</td><td>27%</td><td class="down">11%</td></tr>
-            <tr><td>Confianza</td><td>27%</td><td>22%</td></tr>
-          </table>
+      <div class="results">
+        <div class="left">
+          <div class="stats">
+            <div class="card stat-card"><span class="topic">Tallas</span><b class="big">36% <span>&rarr;</span> 0%</b><p>4 de 11 clientes preguntaban qué talla pedir.</p><p>Después de poner la tabla de medidas en cada prenda, nadie volvió a preguntar.</p></div>
+            <div class="card stat-card"><span class="topic">Envío</span><b class="big">27% <span>&rarr;</span> 0%</b><p>3 de 11 clientes preguntaban cuánto costaba el envío y cuándo llegaba.</p><p>Con el costo y los días en la ficha, la duda desapareció.</p></div>
+            <div class="card stat-card next"><span class="topic">Disponibilidad</span><b class="big">44%</b><p>4 de 9 clientes preguntaron por una talla, color o pieza agotada.</p><p>Es un tema nuevo: el agente lo detectó solo y ya te propone qué hacer.</p></div>
+          </div>
         </div>
         <div class="side">
           <div class="card ok">
-            <h3>Tus clientes, protegidos</h3>
-            <p>Quitamos nombres y teléfonos en tu computadora, antes de analizar.</p>
+            <h3>Tus clientes, protegidos</h3><p>Quitamos nombres, teléfonos y correos en tu computadora, antes de analizar. Nada sale sin limpiar.</p>
           </div>
-          <div class="card">
-            <h3>Nada cambia sin tu sí</h3>
-            <p>Ves el texto exacto y cada cupón antes de aplicarlo.</p>
-          </div>
+          <div class="card"><h3>Tú das el visto bueno</h3><p>Antes de tocar tu tienda te enseñamos el cambio exacto. Tú lo apruebas o lo descartas.</p></div>
         </div>
       </div>
+      <p class="pending"><b>Confianza subió de 27% a 33%.</b> Sigue pendiente, y el agente ya te propone el siguiente paso.</p>
+      <p class="muted note">Porcentaje de chats que preguntan por cada tema. Resultado real del agente con los chats de prueba de la demo: 11 chats antes y 9 una semana después.</p>
     </div>
   </section>
 
