@@ -256,7 +256,11 @@ function renderApply(storeCount) {
     return `<div class="row"><div class="spinner" aria-hidden="true"></div><b>Aplicando en tu tienda…</b></div>
       ${late ? `<p class="muted">Tu plan quedó guardado. El agente lo aplicará en cuanto se conecte.</p>` : ""}${opsList(plan.ops)}`;
   }
-  if (plan.status === "applied") return `<p class="notice"><b>Aplicado ✓</b></p>${opsList(plan.ops, plan.results)}`;
+  if (plan.status === "applied") {
+    const ok = plan.results?.filter((r) => r.ok).length || 0;
+    const head = ok === plan.ops.length ? "Aplicado ✓" : ok ? `Se aplicaron ${ok} de ${plan.ops.length} cambios` : "No se pudo aplicar ningún cambio";
+    return `<p class="notice"><b>${head}</b></p>${opsList(plan.ops, plan.results)}`;
+  }
   // manual: no queue available (RF-18)
   return `<p class="notice">El plan está listo. Cópialo y pídele al agente que lo aplique.</p>
     <textarea readonly rows="8" style="width:100%">${esc(JSON.stringify(plan.ops, null, 2))}</textarea>

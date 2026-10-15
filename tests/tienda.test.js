@@ -68,3 +68,21 @@ test("not connected or failed apply: the plan stays pending for the laptop appli
     assert.equal((await call(h, { method: "GET", query: { id } }))[1].status, "pending");
   }
 });
+
+test("parallel tool calls each get their own reply (MCP request ids)", async () => {
+  const real = globalThis.fetch;
+  globalThis.fetch = async (_url, { body }) => {
+    const { id, method, params } = JSON.parse(body);
+    await new Promise((r) => setTimeout(r, id ? (5 - (id % 5)) * 3 : 0)); // replies arrive out of order
+    const result = method === "tools/call" ? { content: [{ type: "text", text: JSON.stringify({ echo: params.arguments.product_id }) }] } : {};
+    return new Response(`event: message\ndata: ${JSON.stringify({ jsonrpc: "2.0", id, result })}\n\n`, { headers: { "content-type": "text/event-stream", "mcp-session-id": "s" } });
+  };
+  try {
+    const { connect } = await import("../lib/tienda.js");
+    const call = await connect("t");
+    const out = await Promise.all([1, 2, 3, 4, 5].map((i) => call("update_product", { product_id: i })));
+    assert.deepEqual(out.map((o) => o.echo), [1, 2, 3, 4, 5]);
+  } finally {
+    globalThis.fetch = real;
+  }
+});
