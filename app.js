@@ -25,9 +25,8 @@ function load() {
   try { return JSON.parse(sessionStorage.getItem(KEY)); } catch { return null; }
 }
 function show(id) {
-  for (const s of ["cover", "upload", "progress", "empty", "book"]) $(s).hidden = s !== id;
-  $("restart").hidden = id === "cover" || id === "upload" || id === "progress";
-  document.querySelector("header").hidden = id === "cover"; // the cover already shows the name
+  for (const s of ["upload", "progress", "empty", "book"]) $(s).hidden = s !== id;
+  $("restart").hidden = id === "upload" || id === "progress";
   $("banner").hidden = !(id === "book" && state?.fallback);
 }
 
@@ -462,11 +461,10 @@ function reset(screen) {
   show(screen);
 }
 $("restart").addEventListener("click", () => reset("upload"));
-$("home").addEventListener("click", () => reset("cover"));
+$("home").addEventListener("click", () => reset("upload"));
 
 state = load();
 if (state?.plan?.status === "loading") state.plan = null;
 if (state?.analysis) start();
-else show("cover");
+else show("upload");
 if (state?.plan?.status === "pending") poll();
-$("start").addEventListener("click", () => show("upload"));
