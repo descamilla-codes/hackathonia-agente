@@ -30,7 +30,7 @@ test("preview lines in plain Spanish (RF-5)", () => {
 });
 
 test("AI output is reduced to the fields each type uses", () => {
-  const op = normalize({ type: "create_coupon", products: ["x"], text: "y", code: "ENVIO799", kind: "shipping", value: 5, min_price: null });
+  const op = normalize({ type: "create_coupon", products: ["x"], text: "y", code: "ENVIO799", kind: "shipping", value: 5, min_price: 0 });
   assert.deepEqual(op, { type: "create_coupon", code: "ENVIO799", kind: "shipping", value: 0, min_price: null });
 });
 
