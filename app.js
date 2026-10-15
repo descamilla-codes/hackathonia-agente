@@ -383,10 +383,18 @@ function localAnswer(question) {
   return `Recomiendo "${rec.title}": ${rec.why}`;
 }
 
+let asking = false;
 async function ask(question) {
   question = question.trim().slice(0, 300);
-  if (!question || !state) return;
+  if (!question || !state || asking) return;
+  asking = true;
   say(question, "me");
+  const typing = document.createElement("div");
+  typing.className = "msg bot typing";
+  typing.setAttribute("aria-label", "El agente está escribiendo");
+  typing.innerHTML = 'Escribiendo<span aria-hidden="true">.</span><span aria-hidden="true">.</span><span aria-hidden="true">.</span>';
+  msgs.append(typing);
+  msgs.scrollTop = msgs.scrollHeight;
   let answer;
   try {
     const ctrl = new AbortController();
@@ -404,7 +412,9 @@ async function ask(question) {
   } catch {
     answer = localAnswer(question);
   }
+  typing.remove();
   say(answer, "bot");
+  asking = false;
 }
 
 $("ask").addEventListener("submit", (e) => {
