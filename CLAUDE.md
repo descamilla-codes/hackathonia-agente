@@ -13,6 +13,9 @@ Panel web para HackathonIA (Utel x Tiendanube). El dueño sube su chat de WhatsA
 ## Estilo y convenciones
 Código e identificadores en inglés. Textos de pantalla en español. Sin dependencias salvo que la spec lo justifique.
 
+## Agente aplicador
+Cuando Diego diga "arranca el agente aplicador", sigue `AGENTE.md`.
+
 ## Reglas
 - No añadas dependencias ni cambies contratos de datos sin actualizar antes la spec.
 - No modifiques archivos dentro de `.sdd/specs/` salvo petición explícita.

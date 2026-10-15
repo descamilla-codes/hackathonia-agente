@@ -17,6 +17,7 @@ test("only the three allowed change types pass (RF-4, RF-14)", () => {
 
 test("limits: text length, coupon code, discount, plan size (RNF)", () => {
   assert.ok(!validOp({ ...desc, text: "x".repeat(401) }));
+  assert.ok(!validOp({ ...desc, text: "Este jean talla [normal / grande]" }));
   assert.ok(!validOp({ ...coupon, code: "envio gratis" }));
   assert.ok(!validOp({ ...coupon, kind: "percentage", value: 90 }));
   assert.ok(!validPlan([]));
