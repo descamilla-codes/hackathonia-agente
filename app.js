@@ -27,6 +27,7 @@ function load() {
 function show(id) {
   for (const s of ["cover", "upload", "progress", "empty", "book"]) $(s).hidden = s !== id;
   $("restart").hidden = id === "cover" || id === "upload" || id === "progress";
+  document.querySelector("header").hidden = id === "cover"; // the cover already shows the name
   $("banner").hidden = !(id === "book" && state?.fallback);
 }
 
