@@ -128,3 +128,16 @@ test("'after' samples are valid chats from the same store (spec 003)", () => {
   assert.equal(r.store, "Utel Equipo3");
   assert.equal(r.total, 9);
 });
+
+test("exports from the customer side: 'Tú' is not a name, owner picks the store (RF-6d)", async () => {
+  const { NO_STORE } = await import("../lib/chats.js");
+  const lone = (i, text) => ({ name: `c${i}.txt`, text: `[10/14/26, 8:0${i}:00 PM] Tú: ${text}` });
+  const files = [lone(1, "¿tú tienen talla M?"), lone(2, "cuánto cuesta el envío?"), lone(3, "es seguro pagar?"),
+    { name: "c4.txt", text: "[10/14/26, 9:00:00 PM] Tú: hola\n[10/14/26, 9:01:00 PM] Tienda Ana: Gracias por escribir" }];
+  const r = prepare(files);
+  assert.equal(r.error, "store");
+  const none = prepare(files, { storeName: NO_STORE });
+  assert.equal(none.total, 4);
+  assert.equal(none.removed.names, 1); // "Tienda Ana", never "Tú"
+  assert.match(none.chats[0].messages[0].text, /¿tú tienen/);
+});

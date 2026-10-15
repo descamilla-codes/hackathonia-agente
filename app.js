@@ -1,4 +1,4 @@
-import { prepare, verify, compute, snapshot, compare, TOPICS, MAX_FILES } from "./lib/chats.js";
+import { prepare, verify, compute, snapshot, compare, TOPICS, MAX_FILES, NO_STORE } from "./lib/chats.js";
 import { readZipTexts } from "./lib/zip.js";
 import { describe } from "./lib/plan.js";
 
@@ -65,7 +65,8 @@ function refresh(storeName, preDiscarded = refresh.pre || []) {
   if (ready.error === "limit") html += `<p class="error">Son demasiados. El máximo es ${MAX_FILES} archivos o 5 MB de texto.</p>`;
   if (ready.error === "store") {
     html += `<div class="notice stores"><b>¿Cuál eres tú?</b> No pudimos saber cuál remitente es tu tienda.
-      ${ready.storeCandidates.map((s) => `<label><input type="radio" name="store" value="${esc(s)}"> ${esc(s)}</label>`).join("")}</div>`;
+      ${ready.storeCandidates.map((s) => `<label><input type="radio" name="store" value="${esc(s)}"> ${esc(s)}</label>`).join("")}
+      <label><input type="radio" name="store" value="${NO_STORE}"> Ninguno, todos son clientes</label></div>`;
   }
   if (ready.removed) {
     const r = ready.removed;
