@@ -46,7 +46,7 @@ Es el corazón de la demo del hackathon.
 - RF-4: SI un archivo no tiene ninguna línea con el formato de mensaje de WhatsApp (fecha, hora, remitente y texto), o es un .zip corrupto o sin .txt de chat, ENTONCES EL SISTEMA lo descarta.
 - RF-5: CUANDO descarta archivos, EL SISTEMA muestra el nombre de cada archivo descartado y sigue con los demás.
 - RF-6: SI quedan menos de 3 chats válidos, ENTONCES EL SISTEMA no analiza y pide subir más chats.
-- RF-6a: SI la carga supera 50 archivos o 5 MB de texto de chat en total (sin contar fotos, audios ni otros archivos dentro de los .zip), ENTONCES EL SISTEMA rechaza la carga completa y muestra el límite.
+- RF-6a: SI la carga supera 50 archivos o 5 MB de texto de chat en total (sin contar fotos, audios ni otros archivos dentro de los .zip), ENTONCES EL SISTEMA rechaza la carga completa y muestra el límite. Además, cada mensaje se recorta a 2,000 caracteres y un análisis no envía más de 400,000 caracteres a la IA (tope de costo).
 - RF-6b: CUANDO hay 3 o más chats válidos y el dueño presiona "Analizar", EL SISTEMA inicia el análisis.
 - RF-6c: EL SISTEMA identifica como la tienda al remitente que aparece en todos los chats que pasan RF-4, sin contar los que solo tienen spam.
 - RF-6d: SI no hay exactamente un remitente común a esos chats, o el remitente detectado deja menos de 3 chats de clientes y otra elección sí alcanza, ENTONCES EL SISTEMA pide al dueño elegir cuál remitente es la tienda, o "Ninguno, todos son clientes", antes de analizar. "Tú" nunca se trata como nombre de cliente.

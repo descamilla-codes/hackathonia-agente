@@ -58,7 +58,10 @@ Es el paso que convierte el análisis en acción ("comprende, ayuda a decidir y 
 ## Requisitos no funcionales
 - Un plan no contiene nombres, teléfonos ni frases de clientes.
 - El texto agregado a una descripción tiene máximo 400 caracteres por cambio.
-- Un plan tiene máximo 10 cambios.
+- Un plan tiene máximo 10 cambios y máximo 25 productos por cambio.
+- Un cupón de monto fijo es de máximo $500; uno de porcentaje, de máximo 50%.
+- El texto publicado no lleva enlaces, correos, números largos, HTML ni huecos para completar.
+- Como la fila es pública, el agente aplicador pide el "sí" del equipo antes de aplicar cada plan y solo usa las herramientas de editar descripción, envío gratis y crear cupón.
 - Idioma: español de México.
 
 ## Casos límite
