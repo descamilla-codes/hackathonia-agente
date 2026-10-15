@@ -1,11 +1,13 @@
 // Queue of approved change plans (spec 002). Upstash Redis over REST, no dependency.
 import { validPlan } from "../lib/plan.js";
+import { accessToken, connect, applyPlan } from "../lib/tienda.js";
 
 // Vercel may add a custom prefix (e.g. STORAGE_KV_REST_API_URL), so match by suffix.
 const env = (re) => Object.entries(process.env).find(([k, v]) => re.test(k) && v)?.[1];
 const URL_ = env(/(KV_REST_API|REDIS_REST)_URL$/);
 const TOKEN = env(/(KV_REST_API|REDIS_REST)_TOKEN$/);
 const KEEP = 50; // ponytail: last 50 plans only, demo scale
+const MAX_APPLIES_PER_HOUR = 10; // the page is public: cap what anyone can change in the store
 
 async function upstash(...cmd) {
   const r = await fetch(URL_, {
@@ -21,7 +23,28 @@ const validResults = (results, n) =>
   Array.isArray(results) && results.length === n &&
   results.every((x) => typeof x?.ok === "boolean" && typeof x.detail === "string" && x.detail.length <= 300);
 
-export function makeHandler(redis) {
+// Applies the plan right away when the store is connected (spec 006). Otherwise it stays
+// pending for the laptop applier (AGENTE.md).
+async function applyNow(redis, plan, put, apply) {
+  const token = await accessToken(redis).catch(() => null);
+  if (!token) return;
+  const hour = `tn:applies:${new Date().toISOString().slice(0, 13)}`;
+  if ((await redis("INCR", hour)) === 1) await redis("EXPIRE", hour, 3600);
+  if ((await redis("GET", hour)) > MAX_APPLIES_PER_HOUR) return;
+  await put({ ...plan, status: "applying" }); // hidden from the laptop applier while it runs
+  let results;
+  try {
+    results = await apply(plan.ops, token);
+  } catch (err) {
+    console.error("apply failed:", err?.message);
+    return put(plan); // back to pending, the laptop applier can still take it
+  }
+  await put({ ...plan, status: "applied", applied: new Date().toISOString(), results });
+}
+
+const liveApply = async (ops, token) => applyPlan(ops, await connect(token));
+
+export function makeHandler(redis, apply = liveApply) {
   const get = async (id) => JSON.parse((await redis("GET", `plan:${id}`)) || "null");
   const put = (plan) => redis("SET", `plan:${plan.id}`, JSON.stringify(plan), "EX", 7 * 24 * 3600); // plans expire after a week
 
@@ -54,6 +77,7 @@ export function makeHandler(redis) {
         await put(plan);
         await redis("LPUSH", "plans", plan.id);
         await redis("LTRIM", "plans", 0, KEEP - 1);
+        await applyNow(redis, plan, put, apply);
         return res.status(201).json({ id: plan.id });
       }
       return res.status(400).json({ error: "invalid" });

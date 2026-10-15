@@ -254,7 +254,7 @@ function renderApply(storeCount) {
   }
   if (plan.status === "pending") {
     const late = Date.now() - plan.since > 120_000;
-    return `<div class="row"><div class="spinner" aria-hidden="true"></div><b>Esperando al agente…</b></div>
+    return `<div class="row"><div class="spinner" aria-hidden="true"></div><b>Aplicando en tu tienda…</b></div>
       ${late ? `<p class="muted">Tu plan quedó guardado. El agente lo aplicará en cuanto se conecte.</p>` : ""}${opsList(plan.ops)}`;
   }
   if (plan.status === "applied") return `<p class="notice"><b>Aplicado ✓</b></p>${opsList(plan.ops, plan.results)}`;

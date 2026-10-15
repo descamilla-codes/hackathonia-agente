@@ -9,6 +9,9 @@
     },
     "api/chat.js": {
       "includeFiles": "prompts/**"
+    },
+    "api/queue.js": {
+      "maxDuration": 60
     }
   }
 }
