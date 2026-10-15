@@ -1,5 +1,14 @@
 {
   "functions": {
-    "api/analyze.js": { "maxDuration": 60 }
+    "api/analyze.js": {
+      "maxDuration": 60,
+      "includeFiles": "prompts/**"
+    },
+    "api/plan.js": {
+      "includeFiles": "prompts/**"
+    },
+    "api/chat.js": {
+      "includeFiles": "prompts/**"
+    }
   }
 }
