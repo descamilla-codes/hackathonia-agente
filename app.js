@@ -1,9 +1,10 @@
-import { prepare, verify, compute, MAX_FILES } from "./lib/chats.js";
+import { prepare, verify, compute, snapshot, compare, TOPICS, MAX_FILES } from "./lib/chats.js";
 import { readZipTexts } from "./lib/zip.js";
 import { describe } from "./lib/plan.js";
 
 const $ = (id) => document.getElementById(id);
 const KEY = "agente-state";
+const HISTORY = "agente-history"; // survives "Nuevo análisis" (spec 003, RF-3)
 const TIMEOUT_MS = 45_000;
 const SKIP = -1;
 
@@ -115,6 +116,14 @@ async function analyze() {
   files = [];
   ready = null;
   state = { ...result, picks: new Array(result.analysis.problems.length).fill(null) };
+  if (!result.fallback) {
+    // Compare with the previous real analysis, then remember this one (spec 003).
+    let prev = null;
+    try { prev = JSON.parse(localStorage.getItem(HISTORY)); } catch {}
+    if (prev) state.compare = prev;
+    const date = new Date().toLocaleDateString("es-MX", { day: "numeric", month: "short" });
+    try { localStorage.setItem(HISTORY, JSON.stringify({ date, topics: snapshot(result.analysis) })); } catch {}
+  }
   save();
   start();
 }
@@ -146,7 +155,7 @@ function go(i) {
 
 function renderTabs() {
   const mark = (p) => (p === null ? "" : p === SKIP ? '<span class="no">–</span>' : '<span class="ok">✓</span>');
-  const labels = state.analysis.problems.map((p, i) => esc(p.topic.charAt(0).toUpperCase() + p.topic.slice(1)) + mark(state.picks[i]));
+  const labels = state.analysis.problems.map((p, i) => esc(TOPICS[p.topic] || p.topic) + mark(state.picks[i]));
   labels.push("Resumen");
   $("tabs").innerHTML = labels
     .map((l, i) => `<button class="tab" role="tab" aria-selected="${i === current}" data-i="${i}">${l}</button>`)
@@ -158,8 +167,10 @@ function renderProblem(i) {
   const total = state.analysis.total;
   const products = p.products?.length ? ` · ${p.products.map(esc).join(", ")}` : "";
   const lost = ` · ${p.noPurchase} no confirmaron compra en el chat`;
+  const prev = state.compare;
+  const before = prev ? ` · Antes (${esc(prev.date)}): ${prev.topics[p.topic] != null ? prev.topics[p.topic] + "%" : "no se repetía"}` : "";
   $("sheet").innerHTML = `
-    <div class="meta">${p.count} de ${total} conversaciones (${p.pct}%)${lost}${products}</div>
+    <div class="meta">${p.count} de ${total} conversaciones (${p.pct}%)${before}${lost}${products}</div>
     <h1>${esc(p.title)}</h1>
     <p class="desc">${esc(p.description)}</p>
     <div class="quotes">${p.quotes.map((q) => `<span>"${esc(q.text)}"</span>`).join("")}</div>
@@ -202,9 +213,19 @@ function renderSummary() {
       <h1>Lo que decidiste</h1>
       <p class="desc">Puedes volver a cualquier hoja para cambiar tu decisión.</p>
       <ol>${items.join("")}</ol>
+      ${renderCompare()}
       ${mine.length ? `<p><b>Para hacer tú:</b></p><ul>${mine.map((x) => `<li>${esc(x.solution.what)}</li>`).join("")}</ul>` : ""}
       <div id="apply">${renderApply(store.length)}</div>
     </div>`;
+}
+
+function renderCompare() {
+  if (!state.compare) return "";
+  const rows = compare(state.compare.topics, snapshot(state.analysis));
+  const cell = (v, other) => (v != null ? `${v}%` : other != null ? "no se repite" : "");
+  return `<p><b>Antes y después</b> <span class="muted">(comparado con tu análisis del ${esc(state.compare.date)})</span></p>
+    <table class="compare"><tr><th>Tema</th><th>Antes</th><th>Ahora</th></tr>
+    ${rows.map((r) => `<tr><td>${esc(r.label)}</td><td>${r.before != null ? r.before + "%" : "nuevo"}</td><td>${cell(r.after, r.before)}</td></tr>`).join("")}</table>`;
 }
 
 // ---------- Apply in the store (spec 002) ----------

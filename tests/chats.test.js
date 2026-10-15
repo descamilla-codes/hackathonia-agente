@@ -105,3 +105,26 @@ test("a quote the AI itself marked as spam is not evidence (RF-9a)", () => {
   const marked = { ...structuredClone(fallback), spam: [{ chat: "c9", text: "mido 1.85, no sé si me quede la L" }] };
   assert.ok(!verify(marked, chats).problems.some((p) => p.topic === "tallas"));
 });
+
+test("before/after: snapshot keeps only topic percentages (spec 003, RF-2)", async () => {
+  const { snapshot } = await import("../lib/chats.js");
+  const { chats } = prepare(samples);
+  const snap = snapshot(verify(fallback, chats));
+  assert.deepEqual(snap, { tallas: 36, confianza: 36, envio: 27 });
+});
+
+test("before/after: gone, new and changed topics (spec 003, RF-5, RF-6)", async () => {
+  const { compare } = await import("../lib/chats.js");
+  const rows = compare({ tallas: 36, confianza: 36, envio: 27 }, { confianza: 33, disponibilidad: 33 });
+  assert.deepEqual(rows.map((r) => [r.label, r.before, r.after]), [
+    ["Confianza", 36, 33], ["Disponibilidad", null, 33], ["Tallas", 36, null], ["Envío", 27, null],
+  ]);
+});
+
+test("'after' samples are valid chats from the same store (spec 003)", () => {
+  const d = new URL("../muestras/chats_despues/", import.meta.url);
+  const after = readdirSync(d).map((name) => ({ name, text: readFileSync(new URL(name, d), "utf8") }));
+  const r = prepare(after);
+  assert.equal(r.store, "Utel Equipo3");
+  assert.equal(r.total, 9);
+});
