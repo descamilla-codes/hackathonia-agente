@@ -49,7 +49,7 @@ Es el corazón de la demo del hackathon.
 - RF-6a: SI la carga supera 50 archivos o 5 MB de texto de chat en total (sin contar fotos, audios ni otros archivos dentro de los .zip), ENTONCES EL SISTEMA rechaza la carga completa y muestra el límite.
 - RF-6b: CUANDO hay 3 o más chats válidos y el dueño presiona "Analizar", EL SISTEMA inicia el análisis.
 - RF-6c: EL SISTEMA identifica como la tienda al remitente que aparece en todos los chats que pasan RF-4, sin contar los que solo tienen spam.
-- RF-6d: SI no hay exactamente un remitente común a esos chats, ENTONCES EL SISTEMA pide al dueño elegir cuál remitente es la tienda antes de analizar.
+- RF-6d: SI no hay exactamente un remitente común a esos chats, o el remitente detectado deja menos de 3 chats de clientes y otra elección sí alcanza, ENTONCES EL SISTEMA pide al dueño elegir cuál remitente es la tienda, o "Ninguno, todos son clientes", antes de analizar. "Tú" nunca se trata como nombre de cliente.
 
 ### Privacidad y spam
 - RF-7: EL SISTEMA quita los nombres de clientes antes de enviar los chats a la IA, tanto en el remitente como en el texto de los mensajes y en el nombre del archivo. Solo se quitan los nombres que aparecen como remitente o en el nombre del archivo; un nombre que el cliente escribe de sí mismo ("soy Laura") puede pasar, y es un límite aceptado.
