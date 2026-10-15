@@ -1,4 +1,4 @@
-# CLAUDE.md — Agente de voz del cliente (HackathonIA)
+# CLAUDE.md — Convierte (HackathonIA)
 
 Lee `.sdd/constitution.md` y la spec activa en `.sdd/specs/` antes de tocar código.
 
