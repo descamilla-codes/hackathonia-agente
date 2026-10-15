@@ -20,6 +20,7 @@
   --line: #2e332f; --accent: #5b8ff0; --accent-soft: #1a2640; --tab: #232725; --warn: #3a2a10; --warn-ink: #ffcf8a; --ok-bg: #173404; --ok-ink: #c0dd97;
 }
 * { box-sizing: border-box; }
+html { scrollbar-gutter: stable; } /* a scrollbar showing up must not shift the page */
 body { margin: 0; background: var(--bg); color: var(--ink);
   font: 16px/1.45 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
@@ -128,7 +129,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 header .name { font-size: 26px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
 header .right { display: flex; align-items: center; gap: 16px; }
 header .team { font-size: 14px; color: var(--muted); }
-.upload { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; max-width: 1100px; margin: 24px auto 0; }
+.upload { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; max-width: 1100px; margin: 24px auto 0; }
 .upload .intro h1 { font-size: 40px; line-height: 1.15; margin: 14px 0 12px; letter-spacing: -0.5px; }
 .upload .intro > p { font-size: 18px; margin: 0 0 24px; }
 .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); font-size: 14px; font-weight: 700; padding: 6px 14px; border-radius: 999px; }
