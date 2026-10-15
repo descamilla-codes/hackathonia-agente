@@ -28,6 +28,8 @@ Quien abre la página (jueces, emprendedores) debe entender en segundos qué hac
 - RF-3: CUANDO el visitante presiona "Probar con chats de ejemplo", EL SISTEMA carga los chats de muestra como si los hubiera subido.
 - RF-4: CUANDO el visitante presiona "Chats de una semana después", EL SISTEMA carga las muestras "después".
 - RF-5: SI no se pueden cargar las muestras, ENTONCES EL SISTEMA muestra un aviso y deja la carga normal disponible.
+- RF-6: CUANDO alguien abre la página sin un análisis guardado, EL SISTEMA muestra la portada con el nombre "Convierte", el gancho, una línea de qué hace, el equipo y el botón "Empezar".
+- RF-7: CUANDO el visitante presiona "Empezar", EL SISTEMA muestra la carga de chats.
 
 ## Requisitos no funcionales
 - Se lee completo en una pantalla de 1366×768 sin desplazarse hasta el botón de carga.

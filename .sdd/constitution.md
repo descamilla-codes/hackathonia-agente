@@ -1,4 +1,4 @@
-# Constitution — Agente de voz del cliente (HackathonIA)
+# Constitution — Convierte (HackathonIA)
 
 - Versión: 1.1
 - Última actualización: 2026-10-15
