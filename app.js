@@ -19,10 +19,10 @@ let draft = [];
 let current = 0;
 
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {}
+  try { sessionStorage.setItem(KEY, JSON.stringify(state)); } catch {} // client quotes die with the tab
 }
 function load() {
-  try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; }
+  try { return JSON.parse(sessionStorage.getItem(KEY)); } catch { return null; }
 }
 function show(id) {
   for (const s of ["cover", "upload", "progress", "empty", "book"]) $(s).hidden = s !== id;
@@ -38,6 +38,7 @@ async function readFiles(list) {
   files = [];
   const discarded = [];
   for (const f of list) {
+    if (f.size > 20 * 1024 * 1024) { discarded.push(f.name); continue; } // never read huge files
     try {
       if (/\.zip$/i.test(f.name)) {
         const texts = await readZipTexts(await f.arrayBuffer());
@@ -63,7 +64,7 @@ function refresh(storeName, preDiscarded = refresh.pre || []) {
   const discarded = [...preDiscarded, ...(ready.discarded || []).map((n) => files.find((f) => f.name === n)?.label || n)];
   let html = "";
   if (discarded.length) html += `<p class="error">No son chats de WhatsApp y no se usarán: ${discarded.map(esc).join(", ")}</p>`;
-  if (ready.error === "limit") html += `<p class="error">Son demasiados. El máximo es ${MAX_FILES} archivos o 5 MB de texto.</p>`;
+  if (ready.error === "limit") html += `<p class="error">Son demasiados chats o demasiado texto. El máximo es ${MAX_FILES} archivos; prueba con menos.</p>`;
   if (ready.error === "store") {
     html += `<div class="notice stores"><b>¿Cuál eres tú?</b> No pudimos saber cuál remitente es tu tienda.
       ${ready.storeCandidates.map((s) => `<label><input type="radio" name="store" value="${esc(s)}"> ${esc(s)}</label>`).join("")}
@@ -449,7 +450,7 @@ $("demo-despues").addEventListener("click", () => loadExamples("despues"));
 // ---------- Restart and reload (RF-37, RF-38) ----------
 
 $("restart").addEventListener("click", () => {
-  try { localStorage.removeItem(KEY); } catch {}
+  try { sessionStorage.removeItem(KEY); } catch {}
   clearInterval(polling);
   msgs.textContent = "";
   state = null;

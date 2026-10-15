@@ -26,8 +26,9 @@ export default async function handler(req, res) {
   try {
     const { answer } = await askJson({
       system: SYSTEM,
-      content: `<problema>${JSON.stringify(req.body.problem)}</problema>\n<pregunta>${req.body.question}</pregunta>`,
+      content: `<problema>${JSON.stringify(req.body.problem)}</problema>\n<pregunta>${req.body.question.replace(/[<>]/g, "")}</pregunta>`,
       schema: SCHEMA,
+      maxTokens: 600,
     });
     return res.status(200).json({ answer });
   } catch (err) {

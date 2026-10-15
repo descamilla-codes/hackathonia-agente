@@ -23,7 +23,7 @@ const validResults = (results, n) =>
 
 export function makeHandler(redis) {
   const get = async (id) => JSON.parse((await redis("GET", `plan:${id}`)) || "null");
-  const put = (plan) => redis("SET", `plan:${plan.id}`, JSON.stringify(plan));
+  const put = (plan) => redis("SET", `plan:${plan.id}`, JSON.stringify(plan), "EX", 7 * 24 * 3600); // plans expire after a week
 
   return async function handler(req, res) {
     if (!redis) return res.status(503).json({ error: "queue" });

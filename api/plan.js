@@ -43,16 +43,24 @@ export function normalize(op) {
 
 const str = (s, max) => typeof s === "string" && s.length <= max;
 
+export function validItems(items) {
+  return (
+    Array.isArray(items) && items.length > 0 && items.length <= MAX_OPS &&
+    items.every((i) =>
+      str(i?.problem?.topic, 40) && str(i.problem.title, 200) && str(i.problem.description, 400) &&
+      Array.isArray(i.problem.products) && i.problem.products.length <= 25 && i.problem.products.every((p) => str(p, 120)) &&
+      str(i?.solution?.title, 200) && str(i.solution.what, 400) && str(i.solution.why, 400))
+  );
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "method" });
   const items = req.body?.items;
-  const ok =
-    Array.isArray(items) && items.length > 0 && items.length <= MAX_OPS &&
-    items.every((i) => str(i?.problem?.title, 200) && str(i?.solution?.title, 200) && str(i?.solution?.what, 400));
+  const ok = validItems(items);
   if (!ok) return res.status(400).json({ error: "invalid" });
 
   try {
-    const { ops } = await askJson({ system: SYSTEM, content: `<soluciones>${JSON.stringify(items)}</soluciones>`, schema: SCHEMA });
+    const { ops } = await askJson({ system: SYSTEM, content: `<soluciones>${JSON.stringify(items)}</soluciones>`, schema: SCHEMA, maxTokens: 4000 });
     const clean = ops.map(normalize).filter(validOp).slice(0, MAX_OPS);
     if (!clean.length) throw new Error("no valid ops");
     return res.status(200).json({ ops: clean });

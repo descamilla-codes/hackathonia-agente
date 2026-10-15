@@ -85,3 +85,23 @@ test("chat: question required, max 300 chars, bounded context (spec 004, RF-7)",
   assert.ok(!validChat({ question: "x".repeat(301), problem }));
   assert.ok(!validChat({ question: "hola", problem: { big: "x".repeat(7000) } }));
 });
+
+test("security: caps on coupons, products and published text (review)", () => {
+  assert.ok(!validOp({ ...coupon, kind: "absolute", value: 999999 }));
+  assert.ok(validOp({ ...coupon, kind: "absolute", value: 200 }));
+  assert.ok(!validOp({ ...desc, products: Array(26).fill("x") }));
+  for (const bad of ["Visita www.estafa.com", "Escribe a pagos@tienda.mx", "Deposita a 1234567890", "<script>alert(1)</script>", "ve a https://x.co"]) {
+    assert.ok(!validOp({ ...desc, text: bad }), bad);
+  }
+});
+
+test("security: plan and analyze inputs are bounded (review)", async () => {
+  const { validItems } = await import("../api/plan.js");
+  const { validChats } = await import("../api/analyze.js");
+  const item = { problem: { topic: "tallas", title: "t", description: "d", products: ["Jeans"] }, solution: { title: "s", what: "w", why: "y" } };
+  assert.ok(validItems([item]));
+  assert.ok(!validItems([{ ...item, problem: { ...item.problem, description: "x".repeat(5000) } }]));
+  const chat = (text) => ({ id: "c", messages: [{ from: "cliente", text }] });
+  assert.ok(validChats([chat("hola"), chat("hola"), chat("hola")]));
+  assert.ok(!validChats([chat("x".repeat(2001)), chat("hola"), chat("hola")]));
+});

@@ -141,3 +141,11 @@ test("exports from the customer side: 'Tú' is not a name, owner picks the store
   assert.equal(none.removed.names, 1); // "Tienda Ana", never "Tú"
   assert.match(none.chats[0].messages[0].text, /¿tú tienen/);
 });
+
+test("emails are removed and long messages are cut (review)", () => {
+  const files = [1, 2, 3].map((i) => ({ name: `c${i}.txt`, text: `14/10/26, 10:0${i} a. m. - Ana${i}: mi correo es ana${i}@mail.com ${"x".repeat(3000)}\n14/10/26, 10:1${i} a. m. - Tienda: hola` }));
+  const r = prepare(files);
+  const t = r.chats[0].messages[0].text;
+  assert.ok(!t.includes("@mail.com"));
+  assert.ok(t.length <= 2000);
+});

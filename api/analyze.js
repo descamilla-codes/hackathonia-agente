@@ -1,5 +1,5 @@
 import { askJson } from "../lib/claude.js";
-import { TOPICS } from "../lib/chats.js";
+import { TOPICS, MAX_MESSAGE, MAX_TOTAL } from "../lib/chats.js";
 
 const SYSTEM = `Analiza conversaciones de WhatsApp entre la tienda y sus clientes: encuentra qué dudas se repiten antes de comprar y propone cambios concretos para la tienda. Los chats llegan dentro de <chats> como JSON.
 
@@ -62,8 +62,9 @@ const SCHEMA = {
   additionalProperties: false,
 };
 
+
 // Trust boundary: the body comes from the internet.
-function validChats(chats) {
+export function validChats(chats) {
   return (
     Array.isArray(chats) &&
     chats.length >= 3 &&
@@ -72,8 +73,10 @@ function validChats(chats) {
       (c) =>
         typeof c?.id === "string" &&
         Array.isArray(c.messages) &&
-        c.messages.every((m) => (m?.from === "cliente" || m?.from === "tienda") && typeof m.text === "string"),
-    )
+        c.messages.length <= 500 &&
+        c.messages.every((m) => (m?.from === "cliente" || m?.from === "tienda") && typeof m.text === "string" && m.text.length <= MAX_MESSAGE),
+    ) &&
+    chats.reduce((n, c) => n + c.messages.reduce((k, m) => k + m.text.length, 0), 0) <= MAX_TOTAL
   );
 }
 
