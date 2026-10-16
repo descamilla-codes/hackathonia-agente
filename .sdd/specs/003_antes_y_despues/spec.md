@@ -28,7 +28,10 @@ Comparar un análisis nuevo con el anterior lo demuestra con números (criterio 
 
 ## Requisitos funcionales (criterios de aceptación en EARS)
 - RF-1: EL SISTEMA clasifica cada problema en uno de estos temas: tallas, envío, pagos, confianza, devoluciones, precio, disponibilidad, calidad u otro.
-- RF-2: CUANDO termina un análisis real, EL SISTEMA guarda en el navegador la fecha y el porcentaje de cada tema.
+- RF-2: CUANDO termina un análisis real, EL SISTEMA guarda la fecha, el número de chats y el porcentaje de cada tema, en el navegador y en el servidor.
+- RF-2a: EL SISTEMA identifica la tienda en el servidor con una huella de una sola vía de su nombre, sin guardar el nombre, texto de chats, frases ni datos de clientes.
+- RF-2b: EL SISTEMA guarda los últimos 10 análisis de cada tienda por 90 días.
+- RF-2c: EL SISTEMA cuenta cada tema que preguntó al menos un cliente, aunque no llegue a 3 chats, para medir si una duda bajó.
 - RF-3: EL SISTEMA no borra ese registro con "Nuevo análisis".
 - RF-4: CUANDO termina un análisis real y existe un registro anterior, EL SISTEMA muestra en cada hoja el porcentaje anterior del mismo tema y su fecha.
 - RF-5: EL SISTEMA muestra en el Resumen una tabla con cada tema del análisis anterior o del actual, su porcentaje antes y ahora.

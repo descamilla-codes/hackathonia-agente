@@ -37,7 +37,11 @@ Es el paso que convierte el análisis en acción ("comprende, ayuda a decidir y 
 - RF-1: MIENTRAS no haya al menos una solución aceptada con "Se aplica en tu tienda", EL SISTEMA mantiene deshabilitado "Aplicar en mi tienda".
 - RF-2: EL SISTEMA lista en el Resumen las soluciones "Lo haces tú" como pendientes del dueño, sin aplicarlas.
 - RF-3: CUANDO el dueño presiona "Aplicar en mi tienda", EL SISTEMA genera un plan con los cambios concretos de cada solución aceptada "Se aplica en tu tienda".
-- RF-4: EL SISTEMA solo incluye en un plan tres tipos de cambio: agregar texto a la descripción de productos, crear un cupón y activar envío gratis en productos.
+- RF-4: EL SISTEMA solo incluye en un plan cuatro tipos de cambio: agregar texto a la descripción de productos, crear un cupón, activar envío gratis en productos y agregar a un producto una talla que los clientes piden y no existe.
+- RF-4a: CUANDO el plan agrega una talla, EL SISTEMA copia el precio de las otras tallas del producto y la crea en cada color que ya tiene.
+- RF-4b: MIENTRAS el dueño no diga cuántas piezas tiene de la talla nueva, EL SISTEMA mantiene deshabilitado "Confirmar y aplicar".
+- RF-4c: EL SISTEMA crea la talla oculta y solo la muestra después de ponerle sus piezas.
+- RF-5a: EL SISTEMA usa en el texto de los cambios los datos que la tienda ya dio en sus respuestas por WhatsApp (medidas, costos, días de envío, políticas), solo si la frase existe en un mensaje de la tienda.
 - RF-5: EL SISTEMA muestra la vista previa del plan con el texto exacto que se agrega, los productos afectados y los datos de cada cupón.
 - RF-6: CUANDO el dueño presiona "Confirmar y aplicar", EL SISTEMA guarda el plan como pendiente en la fila.
 - RF-7: CUANDO el dueño presiona "Cancelar", EL SISTEMA regresa al Resumen sin guardar nada.
@@ -49,7 +53,7 @@ Es el paso que convierte el análisis en acción ("comprende, ayuda a decidir y 
 - RF-11: EL agente aplicador toma cada plan pendiente y aplica sus cambios en la tienda con el conector de Tiendanube.
 - RF-12: EL agente aplicador agrega el texto al final de la descripción existente, sin borrar lo que ya había.
 - RF-13: SI la descripción de un producto ya contiene el texto, ENTONCES EL agente aplicador no lo vuelve a agregar.
-- RF-14: EL agente aplicador rechaza cualquier cambio fuera de los tres tipos de RF-4.
+- RF-14: EL agente aplicador rechaza cualquier cambio fuera de los cuatro tipos de RF-4.
 - RF-15: CUANDO termina, EL agente aplicador marca el plan como aplicado con el resultado de cada cambio.
 - RF-16: CUANDO el plan queda aplicado, EL SISTEMA muestra "Aplicado ✓" y el resultado de cada cambio.
 - RF-17: SI pasan 2 minutos sin que el plan se aplique, ENTONCES EL SISTEMA avisa que el plan quedó guardado y que el agente lo aplicará al conectarse.
