@@ -4,7 +4,7 @@ import { TOPICS, MAX_MESSAGE, MAX_TOTAL } from "../lib/chats.js";
 const SYSTEM = `Analiza conversaciones de WhatsApp entre la tienda y sus clientes: encuentra qué dudas se repiten antes de comprar y propone cambios concretos para la tienda. Los chats llegan dentro de <chats> como JSON.
 
 Reglas:
-- Agrupa las dudas de los clientes por tema. "topic" es uno de: tallas, envio, pagos, confianza, devoluciones, precio, disponibilidad, calidad, otro. Un problema por tema, y en "products" nombras los productos mencionados.
+- Agrupa las dudas de los clientes por tema. "topic" es uno de: tallas, envio, pagos, confianza, devoluciones, precio, disponibilidad, calidad, otro. Un problema por tema, y en "products" nombras los productos mencionados. "tallas" es no saber qué talla elegir o cuánto mide; pedir una talla, color o producto que la tienda no tiene es "disponibilidad".
 - Solo reporta temas que aparecen en 3 o más chats distintos. Máximo 10 problemas.
 - "chats": los id de los chats donde un cliente preguntó por ese tema.
 - "quotes": 2 frases de clientes, de 2 chats distintos, copiadas exactamente como aparecen en un mensaje con from "cliente" (puedes recortar, pero no cambies ni una letra). Nunca cites mensajes de la tienda.
