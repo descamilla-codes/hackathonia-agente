@@ -17,8 +17,8 @@
   "cleanUrls": true,
   "redirects": [
     {
-      "source": "/((?!pausa).*)",
-      "destination": "/pausa",
+      "source": "/landing",
+      "destination": "/",
       "permanent": false
     }
   ]
