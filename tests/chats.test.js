@@ -157,3 +157,14 @@ test("before/after counts a topic even in 1 chat, never an invented chat id", ()
   assert.equal(snap.pagos, Math.round((1 / chats.length) * 100)); // c99 does not exist
   assert.equal(snap.tallas, 36); // same chat counted once
 });
+
+test("store facts count only if the store really said them, never a customer", () => {
+  const { chats } = prepare(samples);
+  const fer = chats.find((c) => c.messages.some((m) => m.from === "tienda" && m.text.includes("nuestra guía")));
+  const facts = [
+    { topic: "tallas", fact: "S 86 de busto y 92 de cadera", chat: fer.id, quote: "S 86 de busto y 92 de cadera" },
+    { topic: "tallas", fact: "Hay talla XXL", chat: fer.id, quote: "tenemos XXL" },
+    { topic: "pagos", fact: "Aceptan Oxxo", chat: fer.id, quote: "y aceptan pago en Oxxo?" }, // the customer asked, the store did not say it
+  ];
+  assert.deepEqual(verify({ ...structuredClone(fallback), facts }, chats).facts, [{ topic: "tallas", fact: "S 86 de busto y 92 de cadera" }]);
+});

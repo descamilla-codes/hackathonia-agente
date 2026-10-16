@@ -13,6 +13,7 @@ Reglas:
 - "solutions": exactamente 3, con "what" y "why" de máximo 90 caracteres cada uno. Marca "recommended": true en una sola, la de mayor impacto y menor esfuerzo.
 - "applies": "tienda" solo si se puede hacer editando un producto (descripción, nombre, etiquetas, SEO, precio de oferta, envío gratis del producto) o creando un cupón. Todo lo demás es "tu".
 - "topics": para cada tema donde al menos un cliente preguntó, aunque sea en un solo chat, los id de esos chats. Incluye también los temas de "problems". Sirve para medir si una duda bajó, no para proponer soluciones.
+- "facts": datos concretos que la tienda ya dio en sus respuestas (medidas por talla, costo y días de envío, política de cambios, formas de pago). "fact": el dato en una frase de máximo 150 caracteres, sin nombres de clientes. "quote": la frase exacta de un mensaje con from "tienda" que lo dice. Solo datos que la tienda afirmó; nunca de clientes ni inventados.
 - "spam": mensajes que sean spam, cadenas o fraudes; ignóralos en el análisis.`;
 
 const quote = {
@@ -66,9 +67,18 @@ const SCHEMA = {
         additionalProperties: false,
       },
     },
+    facts: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { topic: { type: "string", enum: Object.keys(TOPICS) }, fact: { type: "string" }, chat: { type: "string" }, quote: { type: "string" } },
+        required: ["topic", "fact", "chat", "quote"],
+        additionalProperties: false,
+      },
+    },
     spam: { type: "array", items: quote },
   },
-  required: ["problems", "topics", "spam"],
+  required: ["problems", "topics", "facts", "spam"],
   additionalProperties: false,
 };
 

@@ -4,7 +4,7 @@ import { validOp, MAX_OPS } from "../lib/plan.js";
 const SYSTEM = `El dueño ya aprobó soluciones para problemas que encontraste en los chats de sus clientes. Convierte cada solución en cambios concretos para la tienda. Las soluciones llegan dentro de <soluciones> como JSON.
 
 Solo puedes usar tres tipos de cambio:
-- "append_description": texto que se agrega al final de la descripción de productos. "products": nombres exactos de los productos mencionados, o [] si aplica a todos. "text": máximo 400 caracteres, en español de México, dirigido al cliente, listo para publicarse. No inventes datos que no conoces (medidas exactas, precios, plazos). Nunca dejes huecos para completar, corchetes ni opciones como "[a / b]": el texto se publica tal cual. Si te falta un dato, redacta algo general y verdadero, por ejemplo invitar a escribir por WhatsApp para recibir ayuda con la talla.
+- "append_description": texto que se agrega al final de la descripción de productos. "products": nombres exactos de los productos mencionados, o [] si aplica a todos. "text": máximo 400 caracteres, en español de México, dirigido al cliente, listo para publicarse. Cada solución trae "facts": datos que el dueño ya dio a sus clientes por WhatsApp (medidas, costos, días de envío, políticas). Úsalos tal cual para que el texto tenga los datos reales, por ejemplo la medida de cada talla. No inventes datos que no estén en "facts" (medidas exactas, precios, plazos). Nunca dejes huecos para completar, corchetes ni opciones como "[a / b]": el texto se publica tal cual. Si te falta un dato, redacta algo general y verdadero, por ejemplo invitar a escribir por WhatsApp para recibir ayuda con la talla.
 - "create_coupon": "code" en mayúsculas sin espacios (4 a 15 letras o números), "kind" "percentage", "absolute" o "shipping" (envío gratis), "value" (0 para shipping; máximo 50 para percentage) y "min_price" (0 si no hay mínimo).
 - "free_shipping": activa envío gratis en "products" ([] = todos).
 Máximo 10 cambios en total. En los campos que no apliquen al tipo usa "" para textos, "none" para kind y 0 para números. "min_price" 0 significa sin monto mínimo.`;
@@ -49,7 +49,8 @@ export function validItems(items) {
     items.every((i) =>
       str(i?.problem?.topic, 40) && str(i.problem.title, 200) && str(i.problem.description, 400) &&
       Array.isArray(i.problem.products) && i.problem.products.length <= 25 && i.problem.products.every((p) => str(p, 120)) &&
-      str(i?.solution?.title, 200) && str(i.solution.what, 400) && str(i.solution.why, 400))
+      str(i?.solution?.title, 200) && str(i.solution.what, 400) && str(i.solution.why, 400) &&
+      (i.facts === undefined || (Array.isArray(i.facts) && i.facts.length <= 10 && i.facts.every((f) => str(f, 150)))))
   );
 }
 

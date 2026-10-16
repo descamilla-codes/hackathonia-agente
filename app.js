@@ -314,6 +314,7 @@ async function preparePlan() {
         body: JSON.stringify({ items: items.map((x) => ({
           problem: { topic: x.problem.topic, title: x.problem.title, description: x.problem.description, products: x.problem.products },
           solution: { title: x.solution.title, what: x.solution.what, why: x.solution.why },
+          facts: (state.analysis.facts || []).filter((f) => f.topic === x.problem.topic).map((f) => f.fact).slice(0, 10),
         })) }),
       });
       if (!res.ok) throw new Error(res.status);
