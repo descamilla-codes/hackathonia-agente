@@ -57,7 +57,7 @@ function refresh(storeName, preDiscarded = refresh.pre || []) {
   refresh.pre = preDiscarded;
   ready = files.length || uploads ? prepare(files, { storeName, uploadCount: uploads }) : null;
   const st = $("status");
-  $("analyze").disabled = !ready || !!ready.error;
+  $("analyze").disabled = !ready || !!ready.error || !$("consent").checked; // the owner confirms customers were told
   if (!ready) return (st.innerHTML = "");
 
   const discarded = [...preDiscarded, ...(ready.discarded || []).map((n) => files.find((f) => f.name === n)?.label || n)];
@@ -157,6 +157,10 @@ async function analyze() {
   start();
 }
 $("analyze").addEventListener("click", analyze);
+$("consent").addEventListener("change", () => { $("analyze").disabled = !ready || !!ready.error || !$("consent").checked; }); // no re-prepare: keeps the chosen store
+$("copy-notice").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText($("notice-copy").textContent); $("copy-notice").textContent = "Copiado"; } catch {}
+});
 
 // ---------- Sheets (RF-21 to RF-36) ----------
 
