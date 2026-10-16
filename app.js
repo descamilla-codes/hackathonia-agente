@@ -275,8 +275,11 @@ function renderApply(storeCount) {
   }
   if (plan.status === "loading") return `<div class="row"><div class="spinner" aria-hidden="true"></div><b>Preparando los cambios…</b></div>`;
   if (plan.status === "preview") {
-    return `<div class="notice"><b>Esto es lo que va a cambiar en tu tienda:</b>${opsList(plan.ops)}</div>
-      <div class="row"><button class="btn primary confirm">Confirmar y aplicar</button><button class="btn ghost cancel">Cancelar</button></div>`;
+    const sizes = plan.ops.map((op, i) => (op.type === "add_size" ? i : -1)).filter((i) => i >= 0);
+    const ask = sizes.map((i) => `<label class="stock">¿Cuántas piezas de talla ${esc(plan.ops[i].size)} tienes de cada color en ${esc(plan.ops[i].product)}?
+      <input type="number" min="1" max="999" step="1" inputmode="numeric" data-i="${i}" required></label>`).join("");
+    return `<div class="notice"><b>Esto es lo que va a cambiar en tu tienda:</b>${opsList(plan.ops)}${ask}</div>
+      <div class="row"><button class="btn primary confirm" ${sizes.length ? "disabled" : ""}>Confirmar y aplicar</button><button class="btn ghost cancel">Cancelar</button></div>`;
   }
   if (plan.status === "pending") {
     const late = Date.now() - plan.since > 120_000;
@@ -328,8 +331,24 @@ async function preparePlan() {
   rerenderApply();
 }
 
+// A new size needs its pieces before anything is applied (never infinite stock).
+function stockFromInputs() {
+  const ops = state.plan.ops.map((op) => ({ ...op }));
+  for (const input of document.querySelectorAll("label.stock input")) {
+    const n = Number(input.value);
+    if (!Number.isInteger(n) || n < 1 || n > 999) return null;
+    ops[+input.dataset.i].stock = n;
+  }
+  return ops;
+}
+
+$("sheet").addEventListener("input", (e) => {
+  if (e.target.closest("label.stock")) document.querySelector(".confirm").disabled = !stockFromInputs();
+});
+
 async function confirmPlan() {
-  const ops = state.plan.ops;
+  const ops = stockFromInputs();
+  if (!ops) return;
   try {
     const res = await fetch("api/queue", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ops }) });
     if (!res.ok) throw new Error(res.status);

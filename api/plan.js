@@ -4,9 +4,10 @@ import { validOp, MAX_OPS } from "../lib/plan.js";
 const SYSTEM = `El dueño ya aprobó soluciones para problemas que encontraste en los chats de sus clientes. Convierte cada solución en cambios concretos para la tienda. Las soluciones llegan dentro de <soluciones> como JSON.
 
 Solo puedes usar tres tipos de cambio:
-- "append_description": texto que se agrega al final de la descripción de productos. "products": nombres exactos de los productos mencionados, o [] si aplica a todos. "text": máximo 400 caracteres, en español de México, dirigido al cliente, listo para publicarse. Cada solución trae "facts": datos que el dueño ya dio a sus clientes por WhatsApp (medidas, costos, días de envío, políticas). Úsalos tal cual para que el texto tenga los datos reales, por ejemplo la medida de cada talla. No inventes datos que no estén en "facts" (medidas exactas, precios, plazos). Nunca dejes huecos para completar, corchetes ni opciones como "[a / b]": el texto se publica tal cual. Si te falta un dato, redacta algo general y verdadero, por ejemplo invitar a escribir por WhatsApp para recibir ayuda con la talla.
+- "append_description": texto que se agrega al final de la descripción de productos. "products": nombres exactos de los productos mencionados, o [] si aplica a todos. "text": máximo 400 caracteres, en español de México, dirigido al cliente, listo para publicarse. Cada solución trae "facts": datos que el dueño ya dio a sus clientes por WhatsApp (medidas, costos, días de envío, políticas). Úsalos tal cual para que el texto tenga los datos reales, por ejemplo la medida de cada talla. No inventes datos que no estén en "facts" (medidas exactas, precios, plazos). Nunca dejes huecos para completar, corchetes ni opciones como "[a / b]": el texto se publica tal cual. Si te falta un dato, redacta algo general y verdadero, por ejemplo invitar a escribir por WhatsApp para recibir ayuda con la talla. Si el dato aplica a toda la tienda ("en todas las prendas", "guía única", costos de envío), usa "products": [] para que llegue a todos los productos.
 - "create_coupon": "code" en mayúsculas sin espacios (4 a 15 letras o números), "kind" "percentage", "absolute" o "shipping" (envío gratis), "value" (0 para shipping; máximo 50 para percentage) y "min_price" (0 si no hay mínimo).
 - "free_shipping": activa envío gratis en "products" ([] = todos).
+- "add_size": agrega a un producto una talla que los clientes piden y no existe. "products": exactamente un nombre de producto; "size": la talla (por ejemplo "XL" o "XXL"). El precio lo copia el sistema de las otras tallas y el dueño dice cuántas piezas tiene; tú no los pones.
 Máximo 10 cambios en total. En los campos que no apliquen al tipo usa "" para textos, "none" para kind y 0 para números. "min_price" 0 significa sin monto mínimo.`;
 
 const SCHEMA = {
@@ -17,15 +18,16 @@ const SCHEMA = {
       items: {
         type: "object",
         properties: {
-          type: { type: "string", enum: ["append_description", "create_coupon", "free_shipping"] },
+          type: { type: "string", enum: ["append_description", "create_coupon", "free_shipping", "add_size"] },
           products: { type: "array", items: { type: "string" } },
           text: { type: "string" },
           code: { type: "string" },
           kind: { type: "string", enum: ["percentage", "absolute", "shipping", "none"] },
           value: { type: "number" },
           min_price: { type: "number" },
+          size: { type: "string" },
         },
-        required: ["type", "products", "text", "code", "kind", "value", "min_price"],
+        required: ["type", "products", "text", "code", "kind", "value", "min_price", "size"],
         additionalProperties: false,
       },
     },
@@ -38,6 +40,7 @@ const SCHEMA = {
 export function normalize(op) {
   if (op.type === "append_description") return { type: op.type, products: op.products || [], text: op.text };
   if (op.type === "free_shipping") return { type: op.type, products: op.products || [] };
+  if (op.type === "add_size") return { type: op.type, product: op.products?.[0] || "", size: (op.size || "").trim().toUpperCase(), stock: null }; // stock comes from the owner
   return { type: op.type, code: op.code, kind: op.kind, value: op.kind === "shipping" ? 0 : op.value, min_price: op.min_price || null };
 }
 

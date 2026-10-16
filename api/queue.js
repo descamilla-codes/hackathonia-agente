@@ -1,5 +1,5 @@
 // Queue of approved change plans (spec 002). Upstash Redis over REST, no dependency.
-import { validPlan } from "../lib/plan.js";
+import { readyToApply } from "../lib/plan.js";
 import { redis } from "../lib/redis.js";
 import { accessToken, connect, applyPlan } from "../lib/tienda.js";
 
@@ -59,7 +59,7 @@ export function makeHandler(redis, apply = liveApply) {
       }
       if (req.method === "POST" && !id) {
         const ops = req.body?.ops;
-        if (!validPlan(ops)) return res.status(400).json({ error: "invalid" });
+        if (!readyToApply(ops)) return res.status(400).json({ error: "invalid" });
         const plan = { id: crypto.randomUUID(), status: "pending", created: new Date().toISOString(), ops };
         await put(plan);
         await redis("LPUSH", "plans", plan.id);

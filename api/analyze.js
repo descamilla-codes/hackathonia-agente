@@ -11,9 +11,9 @@ Reglas:
 - "no_purchase": solo chats del problema donde el cliente dice explícitamente que no compra o lo va a pensar ("mejor no", "lo pienso", "lo dejo para después"), con esa frase copiada exactamente. Si no hay frase explícita, no lo incluyas.
 - "title": máximo 60 caracteres. "description": máximo 200 caracteres, sin números ni porcentajes.
 - "solutions": exactamente 3, con "what" y "why" de máximo 90 caracteres cada uno. Marca "recommended": true en una sola, la de mayor impacto y menor esfuerzo.
-- "applies": "tienda" solo si se puede hacer editando un producto (descripción, nombre, etiquetas, SEO, precio de oferta, envío gratis del producto) o creando un cupón. Todo lo demás es "tu".
+- "applies": "tienda" solo si se puede hacer agregando texto a la descripción de productos, activando envío gratis, creando un cupón o agregando a un producto una talla que los clientes piden y no existe. Todo lo demás es "tu".
 - "topics": para cada tema donde al menos un cliente preguntó, aunque sea en un solo chat, los id de esos chats. Incluye también los temas de "problems". Sirve para medir si una duda bajó, no para proponer soluciones.
-- "facts": datos concretos que la tienda ya dio en sus respuestas (medidas por talla, costo y días de envío, política de cambios, formas de pago). "fact": el dato en una frase de máximo 150 caracteres, sin nombres de clientes. "quote": la frase exacta de un mensaje con from "tienda" que lo dice. Solo datos que la tienda afirmó; nunca de clientes ni inventados.
+- "facts": datos concretos que la tienda ya dio en sus respuestas (medidas por talla, costo y días de envío, política de cambios, formas de pago). "fact": el dato en una frase de máximo 150 caracteres, sin nombres de clientes; di a qué aplica ("en todas las prendas", "en toda la tienda" o el nombre del producto). "quote": la frase exacta de un mensaje con from "tienda" que lo dice. Solo datos que la tienda afirmó; nunca de clientes ni inventados.
 - "spam": mensajes que sean spam, cadenas o fraudes; ignóralos en el análisis.`;
 
 const quote = {

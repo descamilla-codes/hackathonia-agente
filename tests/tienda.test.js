@@ -86,3 +86,35 @@ test("parallel tool calls each get their own reply (MCP request ids)", async () 
     globalThis.fetch = real;
   }
 });
+
+test("add size: every color, same price, hidden until stock is set; never twice", async () => {
+  const v = (id, color, talla) => ({ id: String(id), properties: { Color: color, Talla: talla }, price: { amount: "1500.00" } });
+  let variants = [v(1, "Beige", "S"), v(2, "Beige", "L"), v(3, "Azul marino", "S"), v(4, "Azul marino", "L")];
+  const calls = [];
+  const call = async (name, args) => {
+    calls.push([name, args]);
+    if (name === "list_products") return { products: [{ id: "9", name: "Pantalón Chino Urbano", description: "", variants }] };
+    if (name === "update_product" && args.variants?.[0]?.values) variants = [...variants, ...args.variants.map((x, i) => v(100 + i, x.values[0].es, x.values[1].es))];
+    return {};
+  };
+  const [r] = await applyPlan([{ type: "add_size", product: "Pantalón Chino Urbano", size: "XL", stock: 3 }], call);
+  assert.equal(r.ok, true);
+  const created = calls.find(([n, a]) => n === "update_product" && a.variants?.[0]?.values)[1].variants;
+  assert.deepEqual(created, [
+    { price: 1500, visible: false, values: [{ es: "Beige" }, { es: "XL" }] },
+    { price: 1500, visible: false, values: [{ es: "Azul marino" }, { es: "XL" }] },
+  ]);
+  assert.deepEqual(calls.find(([n]) => n === "update_stock_and_price")[1].updates.map((u) => u.stock), [3, 3]);
+  const [again] = await applyPlan([{ type: "add_size", product: "Pantalón Chino Urbano", size: "XL", stock: 3 }], call);
+  assert.match(again.detail, /ya existía/);
+});
+
+test("a plan with a new size needs the owner's pieces before it can be queued", async () => {
+  const { validOp, readyToApply } = await import("../lib/plan.js");
+  const op = { type: "add_size", product: "Pantalón Chino Urbano", size: "XL", stock: null };
+  assert.ok(validOp(op));
+  assert.ok(!readyToApply([op]));
+  assert.ok(readyToApply([{ ...op, stock: 4 }]));
+  assert.ok(!validOp({ ...op, stock: 5000 }));
+  assert.ok(!validOp({ ...op, size: "<b>XL" }));
+});
