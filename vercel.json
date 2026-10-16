@@ -13,5 +13,13 @@
     "api/queue.js": {
       "maxDuration": 60
     }
-  }
+  },
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/landing",
+      "destination": "/",
+      "permanent": false
+    }
+  ]
 }

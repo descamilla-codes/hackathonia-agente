@@ -6,238 +6,221 @@
 <title>Convierte</title>
 <style>
 :root {
-  --bg: #ffffff; --sheet: #ffffff; --ink: #16181a; --muted: #5d636a;
-  --line: #dde1dc; --accent: #1f5fd6; --accent-soft: #e8f0fd; --tab: #e9ebe7; --warn: #fff4e0; --warn-ink: #8a4b00; --ok-bg: #eaf3de; --ok-ink: #27500a;
+  --bg: #ffffff; --soft: #f5f7f4; --ink: #16181a; --muted: #5d636a; --line: #dde1dc;
+  --accent: #1f5fd6; --accent-soft: #e8f0fd; --ok-bg: #eaf3de; --ok-ink: #27500a;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #121413; --sheet: #1b1e1c; --ink: #eceeec; --muted: #a2a8a4;
-    --line: #2e332f; --accent: #5b8ff0; --accent-soft: #1a2640; --tab: #232725; --warn: #3a2a10; --warn-ink: #ffcf8a; --ok-bg: #173404; --ok-ink: #c0dd97;
+    --bg: #121413; --soft: #1b1e1c; --ink: #eceeec; --muted: #a2a8a4; --line: #2e332f;
+    --accent: #5b8ff0; --accent-soft: #1a2640; --ok-bg: #173404; --ok-ink: #c0dd97;
   }
 }
-:root[data-theme="dark"] {
-  --bg: #121413; --sheet: #1b1e1c; --ink: #eceeec; --muted: #a2a8a4;
-  --line: #2e332f; --accent: #5b8ff0; --accent-soft: #1a2640; --tab: #232725; --warn: #3a2a10; --warn-ink: #ffcf8a; --ok-bg: #173404; --ok-ink: #c0dd97;
-}
 * { box-sizing: border-box; }
-html { scrollbar-gutter: stable; } /* a scrollbar showing up must not shift the page */
-body { margin: 0; background: var(--bg); color: var(--ink);
-  font: 16px/1.45 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
-header, main, .banner { width: 100%; max-width: 1440px; }
-#progress, #empty { max-width: 1100px; margin: 0 auto; }
-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; }
-header b { font-size: 18px; }
-[hidden] { display: none !important; }
-.banner { background: var(--warn); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-size: 14px; }
-
-.btn { font: inherit; font-weight: 700; border-radius: 10px; padding: 12px 18px; cursor: pointer; }
-.primary { background: var(--accent); color: #fff; border: 2px solid var(--accent); }
-.primary:disabled { background: var(--line); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
-.ghost { background: var(--sheet); color: var(--ink); border: 2px solid var(--line); }
-.ghost:hover { border-color: var(--muted); }
-
-.card { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 32px; }
-.drop { display: block; border: 2px dashed var(--line); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; }
-.drop.over, .drop:hover { border-color: var(--accent); background: var(--accent-soft); }
-.drop input { display: none; }
-.muted { color: var(--muted); }
-.notice { margin: 16px 0 0; padding: 10px 14px; border-radius: 10px; background: var(--accent-soft); }
-.error { margin: 16px 0 0; color: #c0392b; }
-.stores label { display: block; margin: 6px 0; }
-.row { display: flex; gap: 12px; align-items: center; margin-top: 20px; flex-wrap: wrap; }
-.spinner { width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
-
-.sheet { background: var(--sheet); border: 1px solid var(--line); border-bottom: none;
-  border-radius: 14px 14px 0 0; padding: 32px; min-height: 440px; }
-.sheet h1 { margin: 0 0 4px; font-size: 26px; line-height: 1.2; }
-.meta { color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 10px; }
-.desc { color: var(--muted); max-width: 680px; margin: 0 0 12px;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.quotes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-.quotes span { background: var(--tab); border-radius: 999px; padding: 3px 12px; font-size: 13px; color: var(--muted); }
-.work { display: flex; gap: 20px; align-items: stretch; }
-.options { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.sheet { position: relative; }
-.work { padding-right: 170px; }
-/* Fixed spot on the sheet, so Aceptar and Omitir never move between tabs. */
-.actions { position: absolute; right: 32px; top: 50%; transform: translateY(-50%); width: 150px; display: flex; flex-direction: column; gap: 10px; }
-.opt { text-align: left; font: inherit; color: inherit; background: var(--sheet);
-  border: 2px solid var(--line); border-radius: 12px; padding: 18px; cursor: pointer;
-  display: flex; flex-direction: column; gap: 10px; transition: border-color .15s, transform .15s; }
-.opt:hover { border-color: var(--accent); transform: translateY(-2px); }
-.opt:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
-.opt h3 { margin: 0; font-size: 17px; }
-.opt .what, .opt .why { margin: 0; font-size: 14px; }
-.opt .why { color: var(--muted); }
-.opt .why b { color: var(--ink); }
-.tags { display: flex; gap: 6px; flex-wrap: wrap; min-height: 22px; }
-.badge { background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
-.tag { background: var(--tab); color: var(--muted); font-size: 12px; font-weight: 700; border-radius: 6px; padding: 2px 8px; }
-.tabs { display: flex; gap: 2px; overflow-x: auto; background: var(--tab);
-  border: 1px solid var(--line); border-radius: 0 0 14px 14px; padding: 0 8px; }
-.tab { font: inherit; font-size: 14px; color: var(--muted); background: transparent; border: none;
-  padding: 10px 16px; cursor: pointer; white-space: nowrap; border-top: 3px solid transparent; }
-.tab[aria-selected="true"] { background: var(--sheet); color: var(--ink); font-weight: 700; border-top-color: var(--accent); }
-.tab .ok { color: var(--accent); margin-left: 6px; }
-.tab .no { margin-left: 6px; }
-.summary ol { padding-left: 20px; margin: 0 0 24px; }
-.summary li { margin-bottom: 14px; }
-.summary li small { display: block; color: var(--muted); }
-.pending { color: #b5651d; }
-.compare { border-collapse: collapse; margin-bottom: 24px; }
-.compare th, .compare td { text-align: left; padding: 6px 16px 6px 0; border-bottom: 1px solid var(--line); }
-textarea { background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 10px; font: 13px/1.4 ui-monospace, Menlo, monospace; }
-
-.layout { display: flex; gap: 16px; align-items: stretch; }
-.bookcol { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 660px; } /* same frame on every tab */
-.bookcol .sheet { flex: 1; min-height: 0; overflow-y: auto; }
-.chat { contain: size; width: 340px; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; display: flex; flex-direction: column; max-height: 660px; }
-.chat h2 { margin: 0; padding: 14px 16px; font-size: 15px; border-bottom: 1px solid var(--line); }
-.chat h2 small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
-.msgs { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; min-height: 160px; }
-.msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 14px; white-space: pre-wrap; }
-.msg.bot { background: var(--tab); align-self: flex-start; border-bottom-left-radius: 4px; }
-.msg.me { background: var(--accent); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-.typing { color: var(--muted); font-style: italic; }
-.typing span { animation: blink 1.2s infinite; }
-.typing span:nth-child(2) { animation-delay: .2s; }
-.typing span:nth-child(3) { animation-delay: .4s; }
-@keyframes blink { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .typing span { animation: none; } }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; }
-.chip { font: inherit; font-size: 12px; color: var(--ink); background: var(--sheet); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
-.chip:hover { border-color: var(--accent); }
-.ask { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
-.ask input { flex: 1; min-width: 0; font: inherit; font-size: 14px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
-.ask button { font: inherit; font-weight: 700; font-size: 14px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
-header .logo { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; }
-body:has(#book[hidden]) header { max-width: 1100px; } /* same edge as the screen content */
-.mark { width: 38px; height: 38px; border-radius: 10px; background: var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
-.mark svg { width: 24px; height: 24px; }
+html { scrollbar-gutter: stable; scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
 svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-header .name { font-size: 26px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
-header .right { display: flex; align-items: center; gap: 16px; }
-header .team { font-size: 14px; color: var(--muted); }
-.upload { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; max-width: 1100px; margin: 24px auto 0; }
-.upload .intro h1 { font-size: 40px; line-height: 1.15; margin: 14px 0 12px; letter-spacing: -0.5px; }
-.upload .intro > p { font-size: 18px; margin: 0 0 24px; }
+a { color: inherit; }
+.btn { display: inline-block; font: inherit; font-weight: 700; text-decoration: none; border-radius: 10px; padding: 14px 28px; border: 1px solid transparent; cursor: pointer; }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.ghost { border-color: var(--line); background: var(--bg); color: var(--ink); }
+.muted { color: var(--muted); }
+section { padding: 72px 0; }
+section.alt { background: var(--soft); }
+h2 { font-size: 36px; line-height: 1.15; letter-spacing: -0.5px; margin: 0 0 12px; }
+.lead { font-size: 19px; color: var(--muted); max-width: 680px; margin: 0; }
+
+/* Header */
+header { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); }
+header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 68px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.mark { width: 36px; height: 36px; border-radius: 10px; background: var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; }
+.mark svg { width: 22px; height: 22px; }
+.name { font-size: 24px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+nav { display: flex; align-items: center; gap: 24px; font-size: 15px; }
+nav a:not(.btn) { text-decoration: none; color: var(--muted); }
+nav .btn { padding: 10px 18px; }
+
+/* 1. Hero */
+.hero { padding: 64px 0 56px; text-align: center; }
 .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); font-size: 14px; font-weight: 700; padding: 6px 14px; border-radius: 999px; }
-.upload .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; grid-template-columns: 1fr; }
-.upload .steps li { display: flex; align-items: center; gap: 14px; font-size: 16px; background: none; padding: 0; }
-.upload .steps li::before { content: none; }
-.ico { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; flex: none; }
-.ico svg { width: 22px; height: 22px; }
-.uploader { padding: 24px; }
-.uploader .drop { display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--accent-soft); border: 2px dashed var(--accent); color: var(--accent); padding: 32px 16px; }
-.uploader .drop span:last-child { font-size: 14px; }
-.uploader .drop .ico { background: var(--sheet); width: 52px; height: 52px; }
-.uploader .drop .ico svg { width: 28px; height: 28px; }
-.small { font-size: 14px; }
-.btn.small { padding: 8px 14px; }
-.row.tight { margin-top: 8px; }
-.uploader p.muted { margin: 18px 0 0; }
-label.stock { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; font-weight: 600; }
-label.stock input { width: 90px; font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }
-.privacy { display: flex; align-items: center; gap: 10px; margin: 18px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--ok-bg); color: var(--ok-ink); font-size: 14px; font-weight: 600; }
-.privacy .ico { width: 28px; height: 28px; background: none; color: inherit; }
-.btn.wide { width: 100%; margin-top: 18px; font-size: 17px; padding: 14px; }
-@media (max-width: 900px) { .upload { grid-template-columns: 1fr; gap: 24px; } .upload .intro h1 { font-size: 30px; } header .team { display: none; } }
-.hook { font-size: 30px; line-height: 1.15; margin: 0 0 8px; }
-.hook span { color: var(--accent); }
-.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0 24px; padding: 0; list-style: none; counter-reset: s; }
-.steps li { background: var(--accent-soft); border-radius: 10px; padding: 12px; font-size: 14px; counter-increment: s; }
-.steps li::before { content: counter(s); display: block; font-weight: 800; color: var(--accent); font-size: 18px; }
-@media (max-width: 1200px) {
-  .layout { flex-direction: column; }
-  .chat { width: 100%; height: 420px; max-height: none; }
-  .bookcol { height: auto; }
-  .bookcol .sheet { overflow-y: visible; }
-}
-@media (max-width: 720px) { .steps { grid-template-columns: 1fr 1fr; } .hook { font-size: 24px; } }
-@media (max-width: 960px) {
-  .work { flex-direction: column; padding-right: 0; }
-  .actions { position: static; transform: none; width: 100%; flex-direction: row; justify-content: flex-end; }
-  .actions .btn { width: 150px; }
-}
-@media (max-width: 720px) {
-  .sheet, .card { padding: 20px; }
-  .options { grid-template-columns: 1fr; }
+.hero h1 { font-size: 56px; line-height: 1.08; letter-spacing: -1.5px; margin: 18px auto 16px; max-width: 900px; }
+.hero h1 span { color: var(--accent); }
+.hero .lead { margin: 0 auto; }
+.ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 28px 0 12px; }
+.shot { margin: 40px auto 0; max-width: 1000px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 60px rgba(20, 30, 60, .14); background: var(--bg); }
+.shot .bar { display: flex; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--soft); }
+.shot .bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.shot img { display: block; width: 100%; height: auto; }
+
+/* 2. Problem */
+.pain { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+.bubble { background: var(--bg); border: 1px solid var(--line); border-radius: 14px 14px 14px 4px; padding: 16px 18px; font-size: 17px; }
+.bubble small { display: block; color: var(--muted); font-size: 13px; margin-top: 8px; }
+.stat { margin-top: 32px; font-size: 20px; }
+.stat b { color: var(--accent); }
+
+/* 3. How it works */
+.steps { list-style: none; padding: 0; margin: 32px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; counter-reset: s; }
+.steps li { border: 1px solid var(--line); border-radius: 14px; padding: 20px; counter-increment: s; }
+.steps li::before { content: counter(s); display: inline-flex; width: 32px; height: 32px; border-radius: 50%; align-items: center; justify-content: center; background: var(--accent-soft); color: var(--accent); font-weight: 800; margin-bottom: 12px; }
+.steps b { display: block; margin-bottom: 4px; }
+.steps span { font-size: 15px; color: var(--muted); }
+
+/* 4. Demo */
+.demo { margin-top: 32px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--bg); }
+.demo iframe { display: block; width: 100%; height: 760px; border: 0; }
+.demo-note { margin: 12px 0 0; font-size: 14px; }
+
+/* 5. Results */
+.results { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; margin-top: 32px; }
+.results .left { display: flex; }
+.results .stats { flex: 1; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.side { display: grid; gap: 16px; }
+.stat-card { display: flex; flex-direction: column; gap: 6px; padding: 20px; }
+.card.stat-card p { font-size: 15px; }
+.card.stat-card p + p { color: var(--ink); }
+.stat-card .big { margin-top: 10px; }
+.stat-card .big span { color: var(--muted); font-weight: 400; }
+.stat-card .topic { font-size: 14px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.stat-card .big { white-space: nowrap; font-size: 27px; line-height: 1.1; letter-spacing: -1px; color: var(--ok-ink); }
+.stat-card.next { border-color: var(--accent); }
+.stat-card.next .big { color: var(--accent); }
+.note { font-size: 14px; margin: 12px 0 0; }
+.pending { margin: 16px 0 0; font-size: 16px; }
+.pill.example { margin-top: 16px; background: var(--soft); color: var(--muted); border: 1px solid var(--line); }
+.card { border: 1px solid var(--line); border-radius: 14px; padding: 24px; background: var(--bg); }
+.card h3 { margin: 0 0 8px; font-size: 20px; }
+.card p { margin: 0; color: var(--muted); font-size: 16px; }
+.card.ok { background: var(--ok-bg); border-color: transparent; }
+.card.ok h3, .card.ok p { color: var(--ok-ink); }
+
+/* 6. Final CTA */
+.final { text-align: center; }
+.final .lead { margin: 0 auto; }
+footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 14px; color: var(--muted); }
+
+@media (max-width: 900px) {
+  .hero h1 { font-size: 38px; }
+  h2 { font-size: 28px; }
+  .pain, .steps, .results { grid-template-columns: 1fr; }
+  nav a:not(.btn) { display: none; }
+  .demo iframe { height: 640px; }
+  section { padding: 48px 0; }
 }
 </style>
 </head>
 <body>
+
 <header>
-  <button class="logo" id="home" type="button" aria-label="Volver al inicio"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M12.5 7.5 10 11h4l-2.5 3.5"/></svg></span><span class="name">Convierte</span></button>
-  <div class="right"><span class="team">Equipo 3 · HackathonIA</span><button class="btn ghost" id="restart" hidden>Nuevo análisis</button></div>
+  <div class="wrap">
+    <a class="logo" href="#"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M12.5 7.5 10 11h4l-2.5 3.5"/></svg></span><span class="name">Convierte</span></a>
+    <nav>
+      <a href="#">Inicio</a>
+      <a href="#como">Cómo funciona</a>
+      <a href="#resultados">Resultados</a>
+      <a class="btn primary" href="#demo">Probar gratis</a>
+    </nav>
+  </div>
 </header>
-<div class="banner" id="banner" role="status" hidden>Sin conexión con la IA, mostrando un análisis de ejemplo.</div>
 
 <main>
-  <section class="upload" id="upload">
-    <div class="intro">
-      <span class="pill">Agente de IA para tu tienda en línea</span>
-      <h1>Descubre por qué no te compran, en los chats de tus clientes</h1>
-      <p class="muted">Preguntan por tallas, envíos y confianza antes de comprar. Convierte lee esas dudas y te dice qué cambiar.</p>
-      <ul class="steps">
-        <li><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M8 9h8M8 12h5"/></svg></span>Subes tus chats de WhatsApp</li>
-        <li><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg></span>El agente encuentra las dudas que se repiten</li>
-        <li><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h3M4 12h3M4 18h3"/><path d="m10 6 1.5 1.5L14 5M10 12l1.5 1.5L14 11"/><path d="M17 6h3M17 12h3M10 18h10"/></svg></span>Tú decides qué solución aplicar</li>
-        <li><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9 5 4h14l2 5"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v8h14v-8M10 20v-5h4v5"/></svg></span>El agente aplica los cambios en tu tienda</li>
-      </ul>
-    </div>
-    <div class="card uploader">
-      <label class="drop" id="drop">
-        <input type="file" id="files" multiple accept=".txt,.zip">
-        <span class="ico up"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a5 5 0 0 1-.6-9.96A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9"/><path d="M12 12v8M9 15l3-3 3 3"/></svg></span>
-        <b>Arrastra tus chats aquí</b>
-        <span>o haz clic para elegirlos · .txt o .zip de WhatsApp · de 3 a 50 chats</span>
-      </label>
-      <p class="muted small">¿No tienes chats a la mano?</p>
-      <div class="row tight">
-        <button class="btn ghost small" id="demo-antes">Probar con ejemplo</button>
-        <button class="btn ghost small" id="demo-despues">Una semana después</button>
+  <!-- 1. Hero: what it is + the real product, in the first 5 seconds -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="pill">Agente de IA para tu tienda en Tiendanube</span>
+      <h1>Tus clientes ya te dijeron cómo venderles <span>más</span>.</h1>
+      <p class="lead">Convierte lee los chats de WhatsApp de tu tienda, encuentra las dudas que frenan la compra y aplica la solución en tu tienda.</p>
+      <div class="ctas">
+        <a class="btn primary" href="#demo">Probar con ejemplo</a>
+        <a class="btn ghost" href="#como">Ver cómo funciona</a>
       </div>
-      <p class="privacy"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg></span>Quitamos nombres y teléfonos antes de analizar</p>
-      <div id="status" aria-live="polite"></div>
-      <button class="btn primary wide" id="analyze" disabled>Analizar mis chats</button>
-    </div>
-  </section>
-
-  <section class="card" id="progress" hidden>
-    <div class="row" style="margin-top:0"><div class="spinner" aria-hidden="true"></div>
-      <div><b>Analizando tus chats…</b><br><span class="muted">Esto podría tardar unos minutos.</span></div></div>
-  </section>
-
-  <section class="card" id="empty" hidden>
-    <h1 style="margin-top:0">No encontramos dudas repetidas</h1>
-    <p class="muted">Ningún tema aparece en 3 o más chats. Prueba con más conversaciones.</p>
-  </section>
-
-  <section id="book" class="layout" hidden>
-    <div class="bookcol">
-      <div class="sheet" id="sheet" aria-live="polite"></div>
-      <nav class="tabs" id="tabs" role="tablist"></nav>
-    </div>
-    <aside class="chat" aria-label="Chat con el agente">
-      <h2>Pregúntale al agente<small>Sobre el problema que estás viendo</small></h2>
-      <div class="msgs" id="msgs" aria-live="polite"></div>
-      <div class="chips" id="chips">
-        <button class="chip">¿Por qué recomiendas esa?</button>
-        <button class="chip">Dame otra opción</button>
-        <button class="chip">¿Qué dijeron mis clientes?</button>
+      <p class="muted" style="font-size:14px;margin:0">Sin registro. El análisis tarda unos 20 segundos.</p>
+      <div class="shot">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <img src="assets/hoja.png" alt="Convierte mostrando un problema detectado en los chats: faltan medidas por talla, con frases de clientes y 3 soluciones">
       </div>
-      <form class="ask" id="ask">
-        <input id="q" maxlength="300" placeholder="Escribe tu pregunta" autocomplete="off" aria-label="Tu pregunta">
-        <button>Enviar</button>
-      </form>
-    </aside>
+    </div>
+  </section>
+
+  <!-- 2. Problem -->
+  <section class="alt">
+    <div class="wrap">
+      <h2>Respondes las mismas preguntas todos los días, y aun así no te compran.</h2>
+      <p class="lead">Cada duda que tu tienda no resuelve es una venta que se queda en el chat.</p>
+      <div class="pain">
+        <div class="bubble">"y tallan grande o chico? no dice las medidas en la página"<small>Cliente real de los chats de prueba</small></div>
+        <div class="bubble">"y el envío cuánto cuesta? en la página no aparece hasta el final"<small>Cliente real de los chats de prueba</small></div>
+        <div class="bubble">"hola es seguro pagar con tarjeta en su página?"<small>Cliente real de los chats de prueba</small></div>
+      </div>
+      <p class="stat">En nuestros chats de prueba, <b>4 de cada 11</b> clientes preguntaron por tallas antes de comprar.</p>
+    </div>
+  </section>
+
+  <!-- 3. How it works -->
+  <section id="como">
+    <div class="wrap">
+      <h2>Cómo funciona</h2>
+      <p class="lead">Tú decides. El agente hace el resto.</p>
+      <ol class="steps">
+        <li><b>Subes tus chats</b><span>Exportas tus chats de WhatsApp y los arrastras. De 3 a 50.</span></li>
+        <li><b>El agente los lee</b><span>Encuentra las dudas que más se repiten, con frases reales de tus clientes.</span></li>
+        <li><b>Tú eliges</b><span>Para cada problema te propone 3 soluciones. Aceptas u omites.</span></li>
+        <li><b>Se aplica en tu tienda</b><span>Textos, envío gratis o cupones, directo en Tiendanube.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4. Live demo: the real app -->
+  <section id="demo" class="alt">
+    <div class="wrap">
+      <h2>Pruébalo aquí mismo</h2>
+      <p class="lead">Presiona "Probar con ejemplo" y luego "Analizar mis chats". Es la IA real, con chats de una tienda de ropa de prueba.</p>
+      <div class="demo"><iframe src="demo" title="Demo de Convierte" loading="lazy"></iframe></div>
+      <p class="demo-note muted">¿Prefieres pantalla completa? <a href="demo">Abre la demo aquí</a>.</p>
+    </div>
+  </section>
+
+  <!-- 5. Results and trust -->
+  <section id="resultados">
+    <div class="wrap">
+      <h2>Así mides si funcionó</h2>
+      <p class="lead">Una semana después vuelves a subir tus chats y ves si las dudas bajaron.</p>
+      <span class="pill example">Ejemplo con chats de prueba</span>
+      <div class="results">
+        <div class="left">
+          <div class="stats">
+            <div class="card stat-card"><span class="topic">Tallas</span><b class="big">36% <span>&rarr;</span> 10%</b><p>En la primera semana, 4 de 11 clientes preguntaron qué talla pedir.</p><p>En la segunda semana solo 1 de 10 pregunta, alguien que está entre dos tallas. Así se vería si la tabla de medidas funciona.</p></div>
+            <div class="card stat-card"><span class="topic">Envío</span><b class="big">27% <span>&rarr;</span> 10%</b><p>En la primera semana, 3 de 11 clientes preguntaron por el costo y los días de envío.</p><p>En la segunda semana solo 1 de 10 pregunta. Así se vería si poner el envío en la ficha funciona.</p></div>
+            <div class="card stat-card next"><span class="topic">Disponibilidad</span><b class="big">9% <span>&rarr;</span> 40%</b><p>En la segunda semana, 4 de 10 clientes pidieron algo que no hay, sobre todo el Pantalón Chino Urbano en XXL.</p><p>El agente propone agregar la talla y te pregunta cuántas piezas tienes.</p></div>
+          </div>
+        </div>
+        <div class="side">
+          <div class="card ok">
+            <h3>Tus clientes, protegidos</h3><p>Quitamos nombres, teléfonos y correos en tu computadora, antes de analizar. Nada sale sin limpiar.</p>
+          </div>
+          <div class="card"><h3>Tú das el visto bueno</h3><p>Antes de tocar tu tienda te enseñamos el cambio exacto. Tú lo apruebas o lo descartas.</p></div>
+        </div>
+      </div>
+      <p class="pending"><b>Confianza subió de 27% a 30%.</b> Sigue pendiente, y el agente te propone el siguiente paso.</p>
+      <p class="muted note">Porcentaje de chats que preguntan por cada tema. El análisis lo hizo el agente con IA real, pero los chats son de prueba, escritos por el equipo: 11 de la primera semana y 10 de la segunda. Los porcentajes pueden variar un poco en cada análisis. El siguiente paso es un piloto con una tienda real.</p>
+    </div>
+  </section>
+
+  <!-- 6. Final CTA -->
+  <section class="final alt">
+    <div class="wrap">
+      <h2>Tus clientes ya hablaron. Escúchalos.</h2>
+      <p class="lead">Sube tus chats y descubre en un minuto por qué no te compran.</p>
+      <div class="ctas"><a class="btn primary" href="demo">Probar con mis chats</a></div>
+    </div>
   </section>
 </main>
 
-<script type="module" src="app.js"></script>
+<footer>
+  <div class="wrap">Convierte · Equipo 3 · HackathonIA · Utel × Tiendanube</div>
+</footer>
+
 </body>
 </html>
