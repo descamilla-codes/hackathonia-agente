@@ -27,6 +27,7 @@ a { color: inherit; }
 .muted { color: var(--muted); }
 section { padding: 72px 0; }
 section.alt { background: var(--soft); }
+section[id] { scroll-margin-top: 68px; } /* the sticky header must not cover the section title */
 h2 { font-size: 36px; line-height: 1.15; letter-spacing: -0.5px; margin: 0 0 12px; }
 .lead { font-size: 19px; color: var(--muted); max-width: 680px; margin: 0; }
 
@@ -118,6 +119,7 @@ footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 14px; co
     <a class="logo" href="#"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M12.5 7.5 10 11h4l-2.5 3.5"/></svg></span><span class="name">Convierte</span></a>
     <nav>
       <a href="#">Inicio</a>
+      <a href="#problema">¿Qué pasa?</a>
       <a href="#como">Cómo funciona</a>
       <a href="#resultados">Resultados</a>
       <a class="btn primary" href="#demo">Probar gratis</a>
@@ -145,7 +147,7 @@ footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 14px; co
   </section>
 
   <!-- 2. Problem -->
-  <section class="alt">
+  <section id="problema" class="alt">
     <div class="wrap">
       <h2>Respondes las mismas preguntas todos los días, y aun así no te compran.</h2>
       <p class="lead">Cada duda que tu tienda no resuelve es una venta que se queda en el chat.</p>
@@ -172,18 +174,8 @@ footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 14px; co
     </div>
   </section>
 
-  <!-- 4. Live demo: the real app -->
-  <section id="demo" class="alt">
-    <div class="wrap">
-      <h2>Pruébalo aquí mismo</h2>
-      <p class="lead">Presiona "Lee mis chats" y luego "Analizar mis chats". Es la IA real, con chats de una tienda de ropa de prueba.</p>
-      <div class="demo"><iframe src="demo" title="Demo de Convierte" loading="lazy"></iframe></div>
-      <p class="demo-note muted">¿Prefieres pantalla completa? <a href="demo">Abre la demo aquí</a>.</p>
-    </div>
-  </section>
-
-  <!-- 5. Results and trust -->
-  <section id="resultados">
+  <!-- 4. Results and trust -->
+  <section id="resultados" class="alt">
     <div class="wrap">
       <h2>Así mides si funcionó</h2>
       <p class="lead">Una semana después vuelves a subir tus chats y ves si las dudas bajaron.</p>
@@ -205,6 +197,16 @@ footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 14px; co
       </div>
       <p class="pending"><b>Confianza subió de 27% a 30%.</b> Sigue pendiente, y el agente te propone el siguiente paso.</p>
       <p class="muted note">Porcentaje de chats que preguntan por cada tema. El análisis lo hizo el agente con IA real, pero los chats son de prueba, escritos por el equipo: 11 de la primera semana y 10 de la segunda. Los porcentajes pueden variar un poco en cada análisis. El siguiente paso es un piloto con una tienda real.</p>
+    </div>
+  </section>
+
+  <!-- 5. Live demo: the real app -->
+  <section id="demo">
+    <div class="wrap">
+      <h2>Pruébalo aquí mismo</h2>
+      <p class="lead">Presiona "Lee mis chats" y luego "Analizar mis chats". Es la IA real, con chats de una tienda de ropa de prueba.</p>
+      <div class="demo"><iframe src="demo" title="Demo de Convierte" loading="lazy"></iframe></div>
+      <p class="demo-note muted">¿Prefieres pantalla completa? <a href="demo">Abre la demo aquí</a>.</p>
     </div>
   </section>
 
