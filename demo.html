@@ -32,6 +32,10 @@ header b { font-size: 18px; }
 .banner { background: var(--warn); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-size: 14px; }
 
 .btn { font: inherit; font-weight: 700; border-radius: 10px; padding: 12px 18px; cursor: pointer; }
+.btn.wa { display: inline-flex; align-items: center; gap: 8px; background: #25d366; color: #fff; border: 1px solid #1fb855; }
+.btn.wa:hover { background: #1fb855; }
+.btn.wa svg { width: 20px; height: 20px; stroke: #fff; }
+.btn.wa svg .fill { fill: #fff; stroke: none; }
 .primary { background: var(--accent); color: #fff; border: 2px solid var(--accent); }
 .primary:disabled { background: var(--line); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
 .ghost { background: var(--sheet); color: var(--ink); border: 2px solid var(--line); }
@@ -196,9 +200,9 @@ label.stock input { width: 90px; font: inherit; padding: 6px 8px; border: 1px so
         <b>Arrastra tus chats aquí</b>
         <span>o haz clic para elegirlos · .txt o .zip de WhatsApp · de 3 a 50 chats</span>
       </label>
-      <p class="muted small">¿No tienes chats a la mano?</p>
+      <p class="muted small">O léelos directo de tu WhatsApp:</p>
       <div class="row tight">
-        <button class="btn ghost small" id="demo-antes">Probar con ejemplo</button>
+        <button class="btn wa small" id="demo-antes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 20.5l1.3-4.2A8.5 8.5 0 1 1 8 19.4z"/><path class="fill" d="M9.2 8.2c.3-.4.7-.4 1 0l.8 1.5c.1.3 0 .6-.2.8l-.5.5c.5 1.1 1.4 2 2.5 2.5l.5-.5c.2-.2.5-.3.8-.2l1.5.8c.4.3.4.7 0 1-.6.7-1.4 1-2.3.8-2.5-.7-4.3-2.5-5-5-.2-.9.1-1.7.9-2.2z"/></svg>Lee mis chats</button>
         <button class="btn ghost small" id="demo-despues">Una semana después</button>
       </div>
       <p class="privacy"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg></span>Quitamos nombres y teléfonos antes de analizar</p>
