@@ -133,10 +133,21 @@ test("one plan: later texts append after earlier ones; reworded copies are skipp
     { type: "append_description", products: [], text: guide },
     { type: "append_description", products: [], text: "Envío de 3 a 5 días hábiles con guía de rastreo." },
     { type: "append_description", products: ["A"], text: "Guía de medidas (cm): S 86 de busto y 92 de cadera; M 90 y 96; L 94 y 100; XL 98 y 104." },
-  ], call);
+  ], call, 0);
   const lastA = writes.filter((w) => w.product_id === 1).at(-1).description.es;
   assert.equal(lastA, `<p>Base.</p><p>${guide}</p><p>Envío de 3 a 5 días hábiles con guía de rastreo.</p>`);
   assert.equal(results[1].ok, false);
-  assert.match(results[1].detail, /Agregado en 1 productos; falló en B/);
+  assert.match(results[1].detail, /Agregado en 1 productos; falló en B \(SERVICE_ERROR\)/);
   assert.match(results[2].detail, /1 ya lo tenían/);
+});
+
+test("a write that hits the rate limit is retried, not reported as failed", async () => {
+  let fails = 2;
+  const call = async (name) => {
+    if (name === "list_products") return { products: [{ id: "1", name: "A", description: "Base." }] };
+    if (fails-- > 0) throw new Error("429 Too Many Requests");
+    return {};
+  };
+  const [r] = await applyPlan([{ type: "append_description", products: [], text: "Compra con confianza." }], call, 0);
+  assert.equal(r.ok, true);
 });
