@@ -4,6 +4,8 @@ Agente de IA para tiendas en línea. Lee los chats de WhatsApp de la tienda, enc
 
 Proyecto del HackathonIA (Utel x Tiendanube, octubre 2026).
 
+![Convierte mostrando un problema detectado en los chats: faltan medidas por talla, con frases de clientes y 3 soluciones](assets/hoja.png)
+
 > **Estado:** archivado. El sitio, la base de datos y la llave de la API se dieron de baja el 2026-10-17. Para volver a levantarlo, sigue [Reactivar el proyecto](ARQUITECTURA.md#reactivar-el-proyecto).
 
 ## Cómo funciona
