@@ -32,7 +32,7 @@ test("applies text, free shipping and coupons; skips repeated text; reports miss
   assert.match(results[1].detail, /no encontrados: Vestido Fantasma/);
 
   const updates = calls.filter(([n]) => n === "update_product").map(([, a]) => a);
-  assert.deepEqual(updates[0], { product_id: 1, description: { es: "Jean de prueba.<p>Envío en 3 a 5 días.</p>" } });
+  assert.deepEqual(updates[0], { product_id: 1, description: { es: "<p>Jean de prueba.</p><p>Envío en 3 a 5 días.</p>" } });
   assert.deepEqual(updates[1], { product_id: 1, free_shipping: true });
   assert.deepEqual(calls.find(([n, a]) => n === "create_coupon" && a.code === "ENVIO799")[1], { code: "ENVIO799", type: "shipping", min_price: 799 });
 });
@@ -117,4 +117,26 @@ test("a plan with a new size needs the owner's pieces before it can be queued", 
   assert.ok(readyToApply([{ ...op, stock: 4 }]));
   assert.ok(!validOp({ ...op, stock: 5000 }));
   assert.ok(!validOp({ ...op, size: "<b>XL" }));
+});
+
+test("one plan: later texts append after earlier ones; reworded copies are skipped; one failure does not hide the rest", async () => {
+  const products = [{ id: "1", name: "A", description: "Base." }, { id: "2", name: "B", description: "Base." }];
+  const writes = [];
+  const call = async (name, args) => {
+    if (name === "list_products") return { products };
+    if (args.product_id === 2 && writes.filter((w) => w.product_id === 2).length) throw new Error("SERVICE_ERROR");
+    if (name === "update_product") writes.push(args);
+    return {};
+  };
+  const guide = "Guía de medidas en cm: S 86 de busto y 92 de cadera; M 90 y 96; L 94 y 100; XL 98 y 104.";
+  const results = await applyPlan([
+    { type: "append_description", products: [], text: guide },
+    { type: "append_description", products: [], text: "Envío de 3 a 5 días hábiles con guía de rastreo." },
+    { type: "append_description", products: ["A"], text: "Guía de medidas (cm): S 86 de busto y 92 de cadera; M 90 y 96; L 94 y 100; XL 98 y 104." },
+  ], call);
+  const lastA = writes.filter((w) => w.product_id === 1).at(-1).description.es;
+  assert.equal(lastA, `<p>Base.</p><p>${guide}</p><p>Envío de 3 a 5 días hábiles con guía de rastreo.</p>`);
+  assert.equal(results[1].ok, false);
+  assert.match(results[1].detail, /Agregado en 1 productos; falló en B/);
+  assert.match(results[2].detail, /1 ya lo tenían/);
 });
