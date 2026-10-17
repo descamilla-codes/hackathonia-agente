@@ -78,11 +78,11 @@ function refresh(storeName, preDiscarded = refresh.pre || []) {
   st.innerHTML = html;
 }
 
-$("files").addEventListener("change", (e) => readFiles([...e.target.files]));
+$("files").addEventListener("change", (e) => { demoWeek = null; readFiles([...e.target.files]); });
 const drop = $("drop");
 drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
 drop.addEventListener("dragleave", () => drop.classList.remove("over"));
-drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); readFiles([...e.dataTransfer.files]); });
+drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); demoWeek = null; readFiles([...e.dataTransfer.files]); });
 $("status").addEventListener("change", (e) => { if (e.target.name === "store") refresh(e.target.value); });
 
 // ---------- Analyze (RF-6b, RF-12, RF-20, RF-39 to RF-41) ----------
@@ -121,7 +121,8 @@ async function remember(key, entry) {
 async function analyze() {
   if (!ready || ready.error) return;
   const total = ready.chats.length;
-  const key = await storeKey(ready.store).catch(() => null);
+  const example = demoWeek;
+  const key = example ? null : await storeKey(ready.store).catch(() => null);
   $("analyze").disabled = true; // no second analysis while running
   show("progress");
   let result;
@@ -148,7 +149,7 @@ async function analyze() {
   state = { ...result, picks: new Array(result.analysis.problems.length).fill(null) };
   if (!result.fallback) {
     // Compare with the previous real analysis, then remember this one (spec 003).
-    const prev = await previous(key);
+    const prev = example === "antes" ? null : await previous(key);
     if (prev) state.compare = prev;
     const date = new Date().toLocaleDateString("es-MX", { day: "numeric", month: "short" });
     await remember(key, { date, total, topics: snapshot(result.analysis) });
@@ -484,6 +485,9 @@ $("chips").addEventListener("click", (e) => {
 
 // ---------- Example chats (spec 005) ----------
 
+// Example chats: week 1 always starts fresh and week 2 compares only with this browser's week 1,
+// so the demo never mixes with other visitors' runs or with real stores' history on the server.
+let demoWeek = null;
 async function loadExamples(which) {
   try {
     const index = await (await fetch("muestras/index.json")).json();
@@ -494,6 +498,7 @@ async function loadExamples(which) {
       return new File([await res.text()], name);
     }));
     await readFiles(list);
+    demoWeek = which;
   } catch {
     $("status").innerHTML = `<p class="error">No pudimos cargar los chats de ejemplo. Puedes subir los tuyos.</p>`;
   }
