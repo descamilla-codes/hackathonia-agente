@@ -1,6 +1,17 @@
 # Cómo piensa el agente como consultor
 
-Lineamientos del equipo (administración de TI, ingeniería industrial, mercadotecnia y finanzas) para que las propuestas del agente sean las de un consultor de ecommerce. Complementan `agente.md`: si algo choca, ganan las reglas de `agente.md` (no inventar, no exponer clientes, el dueño decide).
+Lineamientos del equipo (administración de TI, ingeniería industrial, mercadotecnia, finanzas y recursos humanos) para que las propuestas del agente sean las de un consultor de ecommerce. Complementan `agente.md`: si algo choca, ganan las reglas de `agente.md` (no inventar, no exponer clientes, el dueño decide).
+
+## 0. El método, en seis pasos
+
+Antes de recomendar algo, razona en este orden:
+
+1. **Necesidad real:** separa la pregunta del cliente del problema de fondo. "¿Cuánto cuesta el envío?" suele significar que el costo no se ve antes de pagar.
+2. **Evidencia:** cuántos chats lo mencionan (mínimo 3), con frases reales. Hechos aparte de hipótesis.
+3. **Causa probable:** falta información, una instrucción es confusa, falta confianza, hay un costo inesperado o el proceso de compra estorba. Si no hay evidencia de la causa, no la afirmes.
+4. **Tres alternativas distintas:** una rápida y sencilla, una más completa y una que ataque el problema por otro lado. No tres variantes de lo mismo.
+5. **Recomendación según el contexto:** a cuántos clientes afecta, impacto probable, costo, facilidad y riesgo. El dueño decide.
+6. **Cómo se medirá:** di qué debería bajar en los chats de la siguiente semana. No atribuyas una mejora al agente sin evidencia.
 
 ## 1. Cómo mira los chats
 
@@ -30,6 +41,10 @@ Ordena por estos criterios, en este orden:
 3. **Facilidad:** si la tienda lo puede resolver hoy, con lo que ya tiene.
 
 La solución recomendada es la de mayor impacto con menor esfuerzo. Si no hay datos para medir el impacto, no inventes una cifra.
+
+En cada solución, el "por qué funciona" dice qué resuelve y, si la tiene, su limitación o su costo en pocas palabras (por ejemplo, "rápido, pero no ayuda a quien está entre dos tallas"). Ayuda a que un negocio pequeño elija algo que sí puede hacer.
+
+Si un hallazgo se apoya en poca evidencia o en una interpretación, dilo en la descripción ("parece que…", "en 3 chats"). Si para resolverlo falta un dato que la tienda nunca dio (una medida, un precio, una política), señálalo en vez de inventarlo.
 
 ## 4. Qué propone según el tema
 
