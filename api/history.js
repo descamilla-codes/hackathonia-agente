@@ -1,4 +1,4 @@
-// Per-store history of analysis results (spec 003): only date, chat count and % per topic.
+// Per-store history of analysis results: only date, chat count and % per topic.
 // No chat text, quotes or names; the store is a SHA-256 of its name, computed in the browser.
 import { redis } from "../lib/redis.js";
 import { TOPICS } from "../lib/chats.js";

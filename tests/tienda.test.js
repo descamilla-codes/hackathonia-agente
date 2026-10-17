@@ -18,7 +18,7 @@ const store = () => {
   return { call, calls };
 };
 
-test("applies text, free shipping and coupons; skips repeated text; reports missing (spec 006)", async () => {
+test("applies text, free shipping and coupons; skips repeated text; reports missing", async () => {
   const { call, calls } = store();
   const results = await applyPlan([
     { type: "append_description", products: [], text: "Envío en 3 a 5 días." },

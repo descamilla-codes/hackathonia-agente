@@ -7,7 +7,7 @@ import { normalize } from "../api/plan.js";
 const desc = { type: "append_description", products: [], text: "Envío a todo México en 3 a 5 días." };
 const coupon = { type: "create_coupon", code: "ENVIO799", kind: "shipping", value: 0, min_price: 799 };
 
-test("only the three allowed change types pass (RF-4, RF-14)", () => {
+test("only the three allowed change types pass", () => {
   assert.ok(validOp(desc));
   assert.ok(validOp(coupon));
   assert.ok(validOp({ type: "free_shipping", products: ["Jeans Mom Vintage"] }));
@@ -25,7 +25,7 @@ test("limits: text length, coupon code, discount, plan size (RNF)", () => {
   assert.ok(validPlan([desc, coupon]));
 });
 
-test("preview lines in plain Spanish (RF-5)", () => {
+test("preview lines in plain Spanish", () => {
   assert.equal(describe(desc), "Agregar a la descripción de todos los productos");
   assert.equal(describe(coupon), "Crear el cupón ENVIO799: envío gratis en compras desde $799");
 });
@@ -51,7 +51,7 @@ function fakeRedis() {
 
 const call = (h, req) => new Promise((resolve) => h(req, { status: (c) => ({ json: (b) => resolve([c, b]) }) }));
 
-test("queue: create, list pending, mark applied once (RF-6, RF-10, RF-15)", async () => {
+test("queue: create, list pending, mark applied once", async () => {
   const h = makeHandler(fakeRedis());
   const [c1, { id }] = await call(h, { method: "POST", query: {}, body: { ops: [desc, coupon] } });
   assert.equal(c1, 201);
@@ -66,18 +66,18 @@ test("queue: create, list pending, mark applied once (RF-6, RF-10, RF-15)", asyn
   assert.equal((await call(h, { method: "GET", query: { status: "pending" } }))[1].length, 0);
 });
 
-test("queue rejects invalid plans and results (RF-14)", async () => {
+test("queue rejects invalid plans and results", async () => {
   const h = makeHandler(fakeRedis());
   assert.equal((await call(h, { method: "POST", query: {}, body: { ops: [{ type: "delete_product" }] } }))[0], 400);
   const [, { id }] = await call(h, { method: "POST", query: {}, body: { ops: [desc] } });
   assert.equal((await call(h, { method: "POST", query: { id, action: "applied" }, body: { results: [] } }))[0], 400);
 });
 
-test("queue unavailable answers 503 so the page offers copy (RF-18)", async () => {
+test("queue unavailable answers 503 so the page offers copy", async () => {
   assert.equal((await call(makeHandler(null), { method: "POST", query: {}, body: { ops: [desc] } }))[0], 503);
 });
 
-test("chat: question required, max 300 chars, bounded context (spec 004, RF-7)", async () => {
+test("chat: question required, max 300 chars, bounded context", async () => {
   const { validChat } = await import("../api/chat.js");
   const problem = { titulo: "Tallas" };
   assert.ok(validChat({ question: "¿Por qué recomiendas esa?", problem }));
@@ -106,7 +106,7 @@ test("security: plan and analyze inputs are bounded (review)", async () => {
   assert.ok(!validChats([chat("x".repeat(2001)), chat("hola"), chat("hola")]));
 });
 
-test("history keeps only date, chat count and topic percentages (spec 003)", async () => {
+test("history keeps only date, chat count and topic percentages", async () => {
   const { validEntry, makeHandler: history } = await import("../api/history.js");
   assert.ok(validEntry({ date: "15 oct", total: 11, topics: { tallas: 36 } }));
   assert.ok(!validEntry({ date: "15 oct", total: 11, topics: { "y tallan grande?": 36 } }));

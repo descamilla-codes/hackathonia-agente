@@ -4,17 +4,17 @@ import { describe } from "./lib/plan.js";
 
 const $ = (id) => document.getElementById(id);
 const KEY = "agente-state";
-const HISTORY = "agente-history"; // survives "Nuevo análisis" (spec 003, RF-3)
+const HISTORY = "agente-history"; // survives "Nuevo análisis"
 const TIMEOUT_MS = 45_000;
 const SKIP = -1;
 
-// Every string that may come from a chat or the AI goes through esc (RF-43).
+// Every string that may come from a chat or the AI goes through esc.
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
-let files = [];   // [{ name, text }] extracted, kept only in memory (RF-11)
+let files = [];   // [{ name, text }] extracted, kept only in memory
 let uploads = 0;
 let ready = null; // result of prepare()
-let state = null; // { analysis, picks, fallback, fallbackPlans?, plan? } persisted (RF-37)
+let state = null; // { analysis, picks, fallback, fallbackPlans?, plan? } persisted
 let draft = [];
 let current = 0;
 
@@ -30,7 +30,7 @@ function show(id) {
   $("banner").hidden = !(id === "book" && state?.fallback);
 }
 
-// ---------- Upload (RF-1 to RF-6d, RF-10) ----------
+// ---------- Upload ----------
 
 async function readFiles(list) {
   uploads = list.length;
@@ -85,7 +85,7 @@ drop.addEventListener("dragleave", () => drop.classList.remove("over"));
 drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); demoWeek = null; readFiles([...e.dataTransfer.files]); });
 $("status").addEventListener("change", (e) => { if (e.target.name === "store") refresh(e.target.value); });
 
-// ---------- Analyze (RF-6b, RF-12, RF-20, RF-39 to RF-41) ----------
+// ---------- Analyze ----------
 
 async function useFallback() {
   const fb = await (await fetch("fallback.json")).json();
@@ -139,7 +139,7 @@ async function analyze() {
     const raw = await res.json(); // the 45 s limit also covers reading the body
     clearTimeout(timer);
     const analysis = verify(raw, ready.chats);
-    if (raw.problems?.length && !analysis.problems.length) throw new Error("nothing verified"); // RF-40
+    if (raw.problems?.length && !analysis.problems.length) throw new Error("nothing verified");
     result = { analysis, fallback: false };
   } catch {
     result = await useFallback();
@@ -148,7 +148,7 @@ async function analyze() {
   ready = null;
   state = { ...result, picks: new Array(result.analysis.problems.length).fill(null) };
   if (!result.fallback) {
-    // Compare with the previous real analysis, then remember this one (spec 003).
+    // Compare with the previous real analysis, then remember this one.
     const prev = example === "antes" ? null : await previous(key);
     if (prev) state.compare = prev;
     const date = new Date().toLocaleDateString("es-MX", { day: "numeric", month: "short" });
@@ -163,7 +163,7 @@ $("copy-notice").addEventListener("click", async () => {
   try { await navigator.clipboard.writeText($("notice-copy").textContent); $("copy-notice").textContent = "Copiado"; } catch {}
 });
 
-// ---------- Sheets (RF-21 to RF-36) ----------
+// ---------- Sheets ----------
 
 function start() {
   if (!state.analysis.problems.length) return show("empty");
@@ -263,7 +263,7 @@ function renderCompare() {
     ${rows.map((r) => `<tr><td>${esc(r.label)}</td><td>${r.before != null ? r.before + "%" : "nuevo"}</td><td>${cell(r.after, r.before)}</td></tr>`).join("")}</table>`;
 }
 
-// ---------- Apply in the store (spec 002) ----------
+// ---------- Apply in the store ----------
 
 function renderApply(storeCount) {
   const plan = state.plan;
@@ -296,7 +296,7 @@ function renderApply(storeCount) {
     const head = ok === plan.ops.length ? "Aplicado ✓" : ok ? `Se aplicaron ${ok} de ${plan.ops.length} cambios` : "No se pudo aplicar ningún cambio";
     return `<p class="notice"><b>${head}</b></p>${opsList(plan.ops, plan.results)}`;
   }
-  // manual: no queue available (RF-18)
+  // manual: no queue available
   return `<p class="notice">El plan está listo. Cópialo y pídele al agente que lo aplique.</p>
     <textarea readonly rows="8" style="width:100%">${esc(JSON.stringify(plan.ops, null, 2))}</textarea>
     <div class="row"><button class="btn ghost copy">Copiar plan</button></div>`;
@@ -406,13 +406,13 @@ $("sheet").addEventListener("click", (e) => {
   go(next());
 });
 
-// ---------- Chat with the agent (spec 004) ----------
+// ---------- Chat with the agent ----------
 
 const msgs = $("msgs");
 function say(text, who) {
   const div = document.createElement("div");
   div.className = `msg ${who}`;
-  div.textContent = text; // plain text (RF-6)
+  div.textContent = text; // plain text
   msgs.append(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -430,7 +430,7 @@ function chatContext() {
   };
 }
 
-// Answer from the problem's own data when the AI is unavailable (RF-5): nothing invented.
+// Answer from the problem's own data when the AI is unavailable: nothing invented.
 function localAnswer(question) {
   if (current === SUMMARY()) return "Revisa tu resumen: cada decisión viene de lo que más repitieron tus clientes.";
   const p = state.analysis.problems[current];
@@ -483,7 +483,7 @@ $("chips").addEventListener("click", (e) => {
   if (e.target.closest(".chip")) ask(e.target.textContent);
 });
 
-// ---------- Example chats (spec 005) ----------
+// ---------- Example chats ----------
 
 // Example chats: week 1 always starts fresh and week 2 compares only with this browser's week 1,
 // so the demo never mixes with other visitors' runs or with real stores' history on the server.
@@ -506,7 +506,7 @@ async function loadExamples(which) {
 $("demo-antes").addEventListener("click", () => loadExamples("antes"));
 $("demo-despues").addEventListener("click", () => loadExamples("despues"));
 
-// ---------- Restart and reload (RF-37, RF-38) ----------
+// ---------- Restart and reload ----------
 
 function reset(screen) {
   try { sessionStorage.removeItem(KEY); } catch {}

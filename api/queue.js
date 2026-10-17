@@ -1,4 +1,4 @@
-// Queue of approved change plans (spec 002). Upstash Redis over REST, no dependency.
+// Queue of approved change plans. Upstash Redis over REST, no dependency.
 import { readyToApply } from "../lib/plan.js";
 import { redis } from "../lib/redis.js";
 import { accessToken, connect, applyPlan } from "../lib/tienda.js";
@@ -10,7 +10,7 @@ const validResults = (results, n) =>
   Array.isArray(results) && results.length === n &&
   results.every((x) => typeof x?.ok === "boolean" && typeof x.detail === "string" && x.detail.length <= 300);
 
-// Applies the plan right away when the store is connected (spec 006). Otherwise it stays
+// Applies the plan right away when the store is connected. Otherwise it stays
 // pending for the laptop applier (AGENTE.md).
 async function applyNow(redis, plan, put, apply) {
   const token = await accessToken(redis).catch(() => null);

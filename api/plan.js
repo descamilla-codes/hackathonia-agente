@@ -36,7 +36,7 @@ const SCHEMA = {
   additionalProperties: false,
 };
 
-// Keep only the fields each type uses, then validate (spec 002, RF-4).
+// Keep only the fields each type uses, then validate.
 export function normalize(op) {
   if (op.type === "append_description") return { type: op.type, products: op.products || [], text: op.text };
   if (op.type === "free_shipping") return { type: op.type, products: op.products || [] };

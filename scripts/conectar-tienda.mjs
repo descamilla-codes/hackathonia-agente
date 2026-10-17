@@ -1,4 +1,4 @@
-// One-time store authorization (spec 006). Run it on the team laptop: node scripts/conectar-tienda.mjs
+// One-time store authorization. Run it on the team laptop: node scripts/conectar-tienda.mjs
 // Needs the Upstash REST URL and token in .env.local (copy them from Vercel > Storage). Never prints tokens.
 import { createServer } from "node:http";
 import { createHash, randomBytes } from "node:crypto";
