@@ -106,7 +106,7 @@ export default async function handler(req, res) {
   if (!validChats(chats)) return res.status(400).json({ error: "invalid" });
 
   try {
-    const result = await askJson({ system: SYSTEM, content: `<chats>${JSON.stringify(chats)}</chats>`, schema: SCHEMA });
+    const result = await askJson({ system: SYSTEM, content: `<chats>${JSON.stringify(chats)}</chats>`, schema: SCHEMA, res });
     return res.status(200).json(result);
   } catch (err) {
     console.error("analyze failed:", err?.status ?? "", err?.message);

@@ -64,7 +64,7 @@ export default async function handler(req, res) {
   if (!ok) return res.status(400).json({ error: "invalid" });
 
   try {
-    const { ops } = await askJson({ system: SYSTEM, content: `<soluciones>${JSON.stringify(items)}</soluciones>`, schema: SCHEMA, maxTokens: 4000 });
+    const { ops } = await askJson({ system: SYSTEM, content: `<soluciones>${JSON.stringify(items)}</soluciones>`, schema: SCHEMA, maxTokens: 4000, res });
     const clean = ops.map(normalize).filter(validOp).slice(0, MAX_OPS);
     if (!clean.length) throw new Error("no valid ops");
     return res.status(200).json({ ops: clean });
